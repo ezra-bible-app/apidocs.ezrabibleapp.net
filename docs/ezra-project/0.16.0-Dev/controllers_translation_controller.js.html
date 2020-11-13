@@ -1,0 +1,611 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Project Design Docs controllers/translation_controller.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Project Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/tobias-klein/ezra-project"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezra-project.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="SwordNotes.html">SwordNotes</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>controllers/translation_controller.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+const LanguageMapper = require('../helpers/language_mapper.js');
+
+/**
+ * The TranslationController is used to handle the bible translation menu and to
+ * access and generate various information about installed bible translations.
+ * 
+ * Like all other controllers it is only initialized once. It is accessible at the
+ * global object `app_controller.translation_controller`.
+ * 
+ * @category Controller
+ */
+class TranslationController {
+  constructor() {
+    this.languageMapper = new LanguageMapper();
+    this.translationCount = null;
+  }
+
+  getTranslationCount() {
+    return this.translationCount;
+  }
+
+  init(onBibleTranslationChanged) {
+    this.onBibleTranslationChanged = onBibleTranslationChanged;
+    this.initBibleTranslationInfoButton();
+    this.initBibleSyncBox();
+    this.initBibleTranslationInfoBox();
+  }
+
+  initBibleSyncBox() {
+    $('#bible-sync-box').dialog({
+      width: 600,
+      height: 300,
+      autoOpen: false,
+      modal: true,
+      title: i18n.t("module-sync.module-sync-header"),
+      dialogClass: 'bible-sync-dialog'
+    });
+  }
+
+  initBibleTranslationInfoBox() {
+    $('#bible-translation-info-box').dialog({
+      width: 700,
+      height: 500,
+      autoOpen: false,
+      dialogClass: 'ezra-dialog'
+    });
+  }
+
+  initChapterVerseCounts() {
+    var currentTab = app_controller.tab_controller.getTab();
+
+    if (currentTab != null) {
+      var currentBibleTranslationId = currentTab.getBibleTranslationId();
+
+      if (currentBibleTranslationId != null) {
+        bible_chapter_verse_counts = nsi.getBibleChapterVerseCounts(currentBibleTranslationId);
+        app_controller.verse_selection.initBibleChapterVerseCounts(bible_chapter_verse_counts, reference_separator);
+      }
+    }
+  }
+
+  loadSettings() {
+    app_controller.book_selection_menu.updateAvailableBooks();
+    this.initChapterVerseCounts();
+  }
+
+  getBibleSelect(tabIndex) {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+    var bibleSelect = currentVerseListMenu.find('select.bible-select');
+    return bibleSelect;
+  }
+
+  addLanguageGroupsToBibleSelectMenu(tabIndex) {
+    var bibleSelect = this.getBibleSelect(tabIndex);
+    var languages = this.getLanguages();
+
+    for (var i = 0; i &lt; languages.length; i++) {
+      var currentLang = languages[i];
+
+      var newOptGroup = "&lt;optgroup class='bible-select-" + currentLang.languageCode + "-translations' label='" + currentLang.languageName + "'>&lt;/optgroup>";
+      bibleSelect.append(newOptGroup);
+    }
+  }
+
+  updateUiBasedOnNumberOfTranslations(tabIndex, count) {
+    var bibleSelect = this.getBibleSelect(tabIndex);
+
+    if (count == 0) {
+      bibleSelect.attr('disabled','disabled');
+      $('.book-select-button').addClass('ui-state-disabled');
+      $('.tag-select-button').addClass('ui-state-disabled');
+      $('.module-search-button').addClass('ui-state-disabled');
+
+      var currentVerseList = app_controller.getCurrentVerseList(tabIndex);
+      // FIXME: This needs to be adjusted based on the new menu
+      currentVerseList.find('.help-text').html(i18n.t("help.help-text-no-translations", { interpolation: {escapeValue: false} }));
+    } else {
+      $('.bible-select').removeAttr('disabled');
+      $('.book-select-button').removeClass('ui-state-disabled');
+      $('.module-search-button').removeClass('ui-state-disabled');
+
+      var currentBook = null;
+      var currentTagIdList = "";
+      var currentSearchTerm = null;
+
+      var currentTab = app_controller.tab_controller.getTab(tabIndex);
+      if (currentTab != null) {
+        currentBook = currentTab.getBook();
+        currentTagIdList = currentTab.getTagIdList();
+        currentSearchTerm = currentTab.getSearchTerm();
+      }
+
+      if (currentBook == null &amp;&amp; currentTagIdList == "" &amp;&amp; currentSearchTerm == null)  {
+        var currentVerseList = app_controller.getCurrentVerseList(tabIndex);
+        currentVerseList.find('.help-text').text(i18n.t("help.help-text-translation-available"));
+      }
+    }
+  }
+
+  addTranslationsToBibleSelectMenu(tabIndex, translations) {
+    var bibleSelect = this.getBibleSelect(tabIndex);
+    var currentBibleTranslationId = app_controller.tab_controller.getTab(tabIndex)?.getBibleTranslationId();
+
+    for (var translation of translations) {
+      var selected = '';
+      if (currentBibleTranslationId == translation.name) {
+        var selected = ' selected=\"selected\"';
+      }
+
+      var current_translation_html = "&lt;option value='" + translation.name + "'" + selected + ">" + translation.description + "&lt;/option>"
+      var optGroup = bibleSelect.find('.bible-select-' + translation.language + '-translations');
+      optGroup.append(current_translation_html);
+    }
+  }
+
+  initTranslationsMenu(previousTabIndex=-1, tabIndex=undefined) {
+    if (tabIndex === undefined) {
+      var tabIndex = app_controller.tab_controller.getSelectedTabIndex();
+    }
+    //console.log("initTranslationsMenu " + tabIndex);
+
+    var previousVerseListMenu = null;
+    if (previousTabIndex != -1) {
+      previousVerseListMenu = app_controller.getCurrentVerseListMenu(previousTabIndex);
+    }
+
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+    var bibleSelect = null;
+
+    if (previousVerseListMenu != null &amp;&amp; previousVerseListMenu.length > 0) {
+      
+      var previousBibleSelect = previousVerseListMenu.find('select.bible-select').clone();
+      var currentBibleSelect = currentVerseListMenu.find('select.bible-select');
+      currentBibleSelect.replaceWith(previousBibleSelect);
+      bibleSelect = currentVerseListMenu.find('select.bible-select');
+
+    } else {
+
+      bibleSelect = currentVerseListMenu.find('select.bible-select');
+      bibleSelect.empty();
+
+      this.addLanguageGroupsToBibleSelectMenu(tabIndex);
+
+      var translations = nsi.getAllLocalModules();
+      this.previousTranslationCount = this.translationCount;
+      this.translationCount = translations.length;
+
+      if (this.translationCount != this.previousTranslationCount) {
+        this.updateUiBasedOnNumberOfTranslations(tabIndex, translations.length);
+      }
+      
+      this.addTranslationsToBibleSelectMenu(tabIndex, translations);
+    }
+
+    bibleSelect.selectmenu({
+      change: () => {
+        if (!app_controller.tab_controller.isCurrentTabEmpty() &amp;&amp; app_controller.tab_controller.getTab().getTextType() != 'search_results') {
+          this.showBibleTranslationLoadingIndicator();
+        }
+
+        var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+        var bibleSelect = currentVerseListMenu.find('select.bible-select');
+
+        var oldBibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+        var newBibleTranslationId = bibleSelect[0].value;
+
+        app_controller.tab_controller.setCurrentBibleTranslationId(newBibleTranslationId);
+        app_controller.settings.set('bible_translation', newBibleTranslationId);
+        app_controller.tab_controller.refreshBibleTranslationInTabTitle(newBibleTranslationId);
+
+        setTimeout(() => {
+          this.handleBibleTranslationChange(oldBibleTranslationId, newBibleTranslationId)
+        }, 50);
+      }
+    });
+
+    $('.bible-select-block').find('.ui-selectmenu').bind('click', () => {
+      app_controller.hideAllMenus();
+    });
+  }
+
+  initBibleTranslationInfoButton() {
+    $('.bible-translation-info-button').unbind('click');
+    $('.bible-translation-info-button').bind('click', async () => {
+      if (!$(this).hasClass('ui-state-disabled')) {
+        app_controller.hideAllMenus();
+        this.showBibleTranslationInfo();
+      }
+    });
+  }
+
+  getModuleInfo(moduleId, isRemote=false) {
+    var moduleInfo = "No info available!";
+
+    try {
+      var swordModule = null;
+
+      if (isRemote) {
+        swordModule = nsi.getRepoModule(moduleId);
+      } else {
+        swordModule = nsi.getLocalModule(moduleId);
+      }
+      
+      var moduleInfo = "";
+      
+      if (isRemote) {
+        moduleInfo += "&lt;b>" + swordModule.description + "&lt;/b>&lt;br>&lt;br>";
+      }
+
+      moduleInfo += "&lt;p class='external'>";
+      var about = swordModule.about.replace(/\\pard/g, "").replace(/\\par/g, "&lt;br>");
+      moduleInfo += about;
+      moduleInfo += "&lt;/p>";
+
+      var moduleSize = Math.round(swordModule.size / 1024) + " KB";
+
+      var yes = i18n.t("general.yes");
+      var no = i18n.t("general.no");
+
+      moduleInfo += "&lt;p style='margin-top: 1em; padding-top: 1em; border-top: 1px solid grey; font-weight: bold'>" + i18n.t("general.sword-module-info") + "&lt;/p>";
+      moduleInfo += "&lt;table>";
+      moduleInfo += "&lt;tr>&lt;td style='width: 11em;'>" + i18n.t("general.module-name") + ":&lt;/td>&lt;td>" + swordModule.name + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-version") + ":&lt;/td>&lt;td>" + swordModule.version + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-language") + ":&lt;/td>&lt;td>" + this.languageMapper.getLanguageName(swordModule.language) + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-license") + ":&lt;/td>&lt;td>" + swordModule.distributionLicense + "&lt;/td>&lt;/tr>";
+
+      if (swordModule.type == 'Biblical Texts') {
+        moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-strongs") + ":&lt;/td>&lt;td>" + (swordModule.hasStrongs ? yes : no) + "&lt;/td>&lt;/tr>";
+        moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-headings") + ":&lt;/td>&lt;td>" + (swordModule.hasHeadings ? yes : no) + "&lt;/td>&lt;/tr>";
+        moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-footnotes") + ":&lt;/td>&lt;td>" + (swordModule.hasFootnotes ? yes : no) + "&lt;/td>&lt;/tr>";
+        moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-xrefs") + ":&lt;/td>&lt;td>" + (swordModule.hasCrossReferences ? yes : no) + "&lt;/td>&lt;/tr>";
+        moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-redletter") + ":&lt;/td>&lt;td>" + (swordModule.hasRedLetterWords ? yes : no) + "&lt;/td>&lt;/tr>";
+      }
+
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-size") + ":&lt;/td>&lt;td>" + moduleSize + "&lt;/td>&lt;/tr>";
+      if (!isRemote) {
+        moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-location") + ":&lt;/td>&lt;td>" + swordModule.location + "&lt;/td>&lt;/tr>";
+      }
+
+      moduleInfo += "&lt;/table>";
+
+      if (isRemote &amp;&amp; swordModule.locked &amp;&amp; swordModule.unlockInfo != "") {
+        moduleInfo += "&lt;p style='margin-top: 1em; padding-top: 1em; border-top: 1px solid grey; font-weight: bold'>" + i18n.t("general.sword-unlock-info") + "&lt;/p>";
+        moduleInfo += "&lt;p class='external'>" + swordModule.unlockInfo + "&lt;/p>";
+      }
+
+      moduleInfo += "&lt;p style='margin-top: 1em; padding-top: 1em; border-top: 1px solid grey; font-weight: bold'>" + i18n.t("general.sword-library-info") + "&lt;/p>";
+      moduleInfo += "&lt;p>" + i18n.t("general.using-sword-version") + " &lt;b>" + nsi.getSwordVersion() + "&lt;/b>.&lt;/p>";
+    } catch (ex) {
+      console.error("Got exception while trying to get module info: " + ex);
+    }
+
+    return moduleInfo;
+  }
+
+  showBibleTranslationInfo() {
+    var currentBibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+    var moduleInfo = this.getModuleInfo(currentBibleTranslationId);
+
+    var currentBibleTranslationName = app_controller.tab_controller.getCurrentBibleTranslationName();
+    var offsetLeft = $(window).width() - 900;
+    $('#bible-translation-info-box').dialog({
+      title: currentBibleTranslationName,
+      position: [offsetLeft,120]
+    });
+    $('#bible-translation-info-box-content').empty();
+    $('#bible-translation-info-box-content').html(moduleInfo);
+    $('#bible-translation-info-box').dialog("open");
+  }
+
+  hasBibleTranslationStrongs(translationId) {
+    if (translationId == null) {
+      return false;
+    }
+
+    var bibleTranslation = null;
+
+    try {
+      bibleTranslation = nsi.getLocalModule(translationId);
+    } catch (e) {
+      console.log("Could not get local sword module for " + translationId);
+      return false;
+    }
+
+    if (bibleTranslation != null) {
+      return bibleTranslation.hasStrongs;
+    } else {
+      return false;
+    }
+  }
+
+  async handleBibleTranslationChange(oldBibleTranslationId, newBibleTranslationId) {
+    app_controller.book_selection_menu.updateAvailableBooks();
+    this.initChapterVerseCounts();
+    this.onBibleTranslationChanged(oldBibleTranslationId, newBibleTranslationId);
+  }
+
+  isStrongsTranslationInDb() {
+    var allTranslations = nsi.getAllLocalModules();
+
+    for (var dbTranslation of allTranslations) {
+      if (dbTranslation.hasStrongs) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  async installStrongs(htmlElementForMessages) {
+    var message = "&lt;span>" + i18n.t("general.installing-strongs") + " ...&lt;/span>";
+    htmlElementForMessages.append(message);
+
+    try {
+      await nsi.installModule("StrongsHebrew");
+      await nsi.installModule("StrongsGreek");
+      app_controller.dictionary_controller.runAvailabilityCheck();
+      var doneMessage = "&lt;span> " + i18n.t("general.done") + ".&lt;/span>&lt;br/>";
+      htmlElementForMessages.append(doneMessage);
+    } catch(e) {
+      var errorMessage = "&lt;span> " + i18n.t("general.module-install-failed") + ".&lt;/span>&lt;br/>";
+      htmlElementForMessages.append(errorMessage);
+    }
+  }
+
+  async installStrongsIfNeeded() {
+    //console.time("get sync infos");   
+    var strongsInstallNeeded = this.isStrongsTranslationInDb() &amp;&amp; !nsi.strongsAvailable();
+    //console.timeEnd("get sync infos");
+
+    if (strongsInstallNeeded) {
+      var currentVerseList = app_controller.getCurrentVerseList();
+      var verse_list_position = currentVerseList.offset();
+      $('#bible-sync-box').dialog({
+        position: [verse_list_position.left + 50, verse_list_position.top + 30]
+      });
+
+      $('#bible-sync-box').dialog("open");
+      await sleep(100);
+    }
+
+    if (strongsInstallNeeded) {
+      await this.installStrongs($('#bible-sync-box'));
+    }
+
+    if (strongsInstallNeeded) {
+      await sleep(2000);
+    }
+
+    $('#bible-sync-box').dialog("close");
+  }
+
+  getCurrentBibleTranslationLoadingIndicator() {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    var loadingIndicator = currentVerseListMenu.find('.loader');
+    return loadingIndicator;
+  }
+
+  showBibleTranslationLoadingIndicator() {
+    var bibleTranslationLoadingIndicator = this.getCurrentBibleTranslationLoadingIndicator();
+    bibleTranslationLoadingIndicator.show();
+  }
+
+  hideBibleTranslationLoadingIndicator() {
+    var bibleTranslationLoadingIndicator = this.getCurrentBibleTranslationLoadingIndicator();
+    bibleTranslationLoadingIndicator.hide();
+  }
+
+  enableCurrentTranslationInfoButton(tabIndex=undefined) {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+    var translationInfoButton = currentVerseListMenu.find('.bible-translation-info-button');
+    translationInfoButton.removeClass('ui-state-disabled');
+
+    var tabId = app_controller.tab_controller.getSelectedTabId(tabIndex);
+    if (tabId !== undefined) {
+      uiHelper.configureButtonStyles('#' + tabId);
+    }
+  }
+
+  disableCurrentTranslationInfoButton() {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    var translationInfoButton = currentVerseListMenu.find('.bible-translation-info-button');
+    translationInfoButton.addClass('ui-state-disabled');
+  }
+
+  getLanguages(moduleType='BIBLE') {
+    var localModules = nsi.getAllLocalModules(moduleType);
+    
+    var languages = [];
+    var languageCodes = [];
+
+    var languageMapper = new LanguageMapper();
+
+    for (var i = 0; i &lt; localModules.length; i++) {
+      var module = localModules[i];
+      var languageName = languageMapper.getLanguageName(module.language);
+
+      if (!languageCodes.includes(module.language)) {
+        languages.push({
+          'languageName': languageName,
+          'languageCode': module.language
+        });
+        languageCodes.push(module.language);
+      }
+    }
+
+    return languages;
+  }
+
+  getInstalledModules(moduleType='BIBLE') {
+    var localModules = nsi.getAllLocalModules(moduleType);
+    var translations = [];
+
+    for (var i = 0; i &lt; localModules.length; i++) {
+      translations.push(localModules[i].name);
+    }
+
+    return translations;
+  }
+
+  getVersification(translationCode) {
+    var versification = null;
+
+    var psalm3Verses = nsi.getChapterText(translationCode, 'Psa', 3);
+    var revelation12Verses = nsi.getChapterText(translationCode, 'Rev', 12);
+
+    if (psalm3Verses.length == 8 || revelation12Verses.length == 17) { // ENGLISH versification
+      versification = "ENGLISH";
+
+    } else if (psalm3Verses.length == 9 || revelation12Verses.length == 18) { // HEBREW versification
+      versification = "HEBREW";
+
+    } else { // Unknown versification
+
+      versification = "UNKNOWN"
+
+      /*console.log("Unknown versification!");
+      console.log("Psalm 3 has " + psalm3Verses.length + " verses.");
+      console.log("Revelation 12 has " + revelation12Verses.length + " verses.");*/
+    }
+
+    return versification;
+  }
+}
+
+module.exports = TranslationController;
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

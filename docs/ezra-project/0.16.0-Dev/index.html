@@ -138,7 +138,7 @@ erDiagram
     Sequelize-Model           ||--||    SQLite-DB-Table           : maps
     node-sword-interface      ||--||    SWORD-Engine              : wraps
 </div>
-<a name='file-structure'>
+<p><a name='file-structure'></a></p>
 <h2>File structure</h2>
 <p>On the top-level these are the most relevant files and directories.</p>
 <h3>main.js</h3>
@@ -163,14 +163,14 @@ erDiagram
 <p>This directory contains static HTML files (e.g. for the book selection menu, the display options menu, etc.). These files are loaded dynamically into the DOM by <code>ezra_init.js</code>.</p>
 <h3>locales</h3>
 <p>Here you find <a href="https://www.i18next.com/">i18next</a> locale files (JSON format).</p>
-<a name='db-schema'>
+<p><a name='db-schema'></a></p>
 <h2>Database schema</h2>
 <div class="mermaid">
 erDiagram
     BibleBook                 ||--|{    VerseReference      : has
-    VerseReference            ||--|{    VerseTag            : has
     Note                      o|--||    VerseReference      : has
-    VerseTag                  ||--||    Tag                 : has
+    VerseReference            ||--|{    VerseTag            : has
+    Tag                       ||--|{    VerseTag            : has
 </div>
 <script src="https://unpkg.com/mermaid@8.8.3/dist/mermaid.min.js"></script></article>
     </section>

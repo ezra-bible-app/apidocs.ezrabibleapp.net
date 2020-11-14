@@ -120,7 +120,23 @@
 
 
     <section>
-        <article><h2>File structure</h2>
+        <article><h2>Architecture overview</h2>
+<div class="mermaid">
+erDiagram
+    ezra_init                 ||--|{    HTML-Component            : loads
+    ezra_init                 ||--||    Component-or-Controller   : initializes
+    ezra_init                 ||--||    Sequelize-Model           : initializes
+    HTML-Component            }|--||    DOM                       : is-part-of
+    Component-or-Controller   }|--|{    HTML-Component            : modifies
+    Component-or-Controller   }|--|{    JS-Event                  : handles
+    Component-or-Controller   }|--||    SettingsHandler           : uses
+    SettingsHandler           ||--||    SettingsFile              : manages
+    Component-or-Controller   ||--|{    node-sword-interface      : uses
+    Component-or-Controller   }|--|{    Sequelize-Model           : uses
+    Sequelize-Model           ||--||    SQLite-DB-Table           : maps
+    node-sword-interface      ||--||    SWORD-Engine              : wraps
+</div>
+<h2>File structure</h2>
 <p>On the top-level these are the most relevant files and directories.</p>
 <h3>main.js</h3>
 <p>Standard node.js / Electron start script. This is not changed very often.</p>
@@ -143,7 +159,8 @@
 <h3>html</h3>
 <p>This directory contains static HTML files (e.g. for the book selection menu, the display options menu, etc.). These files are loaded dynamically into the DOM by <code>ezra_init.js</code>.</p>
 <h3>locales</h3>
-<p>Here you find <a href="https://www.i18next.com/">i18next</a> locale files (JSON format).</p></article>
+<p>Here you find <a href="https://www.i18next.com/">i18next</a> locale files (JSON format).</p>
+<script src="https://unpkg.com/mermaid@8.8.3/dist/mermaid.min.js"></script></article>
     </section>
 
 

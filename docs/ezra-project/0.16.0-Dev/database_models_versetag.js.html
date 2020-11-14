@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Project Design Docs NavigationPane</title>
+  <title>Ezra Project Design Docs database/models/versetag.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -93,157 +95,92 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Class</p>
-                    <h1>NavigationPane</h1>
+                    <p>Source</p>
+                    <h1>database/models/versetag.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>NavigationPane<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description"><p>The NavigationPane class implements the update and event handling of the
-navigation pane that is shown left of the bible text pane.</p></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class='vertical-section'>
-                <div class="members">
-                    <div class="member">
-                        <div class=name>
-                            <span class="tag">Constructor</span>
-                        </div>
-                        
-
-
-    
-    <h4 class="name" id="NavigationPane">
-        <a class="href-link" href="#NavigationPane">#</a>
-        
-        <span class="code-name">
-            
-                new NavigationPane<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="components_navigation_pane.js.html" class="button">View Source</a>
-            <span>
-                <a href="components_navigation_pane.js.html">components/navigation_pane.js</a>, <a href="components_navigation_pane.js.html#line25">line 25</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+'use strict';
+/**
+ * The VerseTag model is used to handle the relationship between a VerseReference and a Tag.
+ * @typedef VerseTag
+ * @category Model
+ */
+module.exports = (sequelize, DataTypes) => {
+  const VerseTag = sequelize.define('VerseTag', {
+    verseReferenceId: DataTypes.INTEGER,
+    tagId: DataTypes.INTEGER,
+    tagTitle: DataTypes.VIRTUAL,
+    verseId: DataTypes.VIRTUAL,
+    bibleBookId: DataTypes.VIRTUAL,
+    absoluteVerseNrEng: DataTypes.VIRTUAL,
+    absoluteVerseNrHeb: DataTypes.VIRTUAL
+  }, {});
+
+  VerseTag.associate = function(models) {
+    // associations can be defined here
+  };
+
+  VerseTag.groupVerseTagsByVerse = function(verseTags, versification) {
+    var groupedVerseTags = {};
+
+    for (var i = 0; i &lt; verseTags.length; i++) {
+      var vt = verseTags[i];
+      var bibleBookId = vt.bibleBookId.toLowerCase()
+
+      var absoluteVerseNr = (versification == 'eng' ? vt.absoluteVerseNrEng : vt.absoluteVerseNrHeb);
+      var verseReferenceId = versification + '-' + bibleBookId + '-' + absoluteVerseNr;
+
+      if (groupedVerseTags[verseReferenceId] == null) {
+        groupedVerseTags[verseReferenceId] = [];
+      }
+
+      groupedVerseTags[verseReferenceId].push(vt);
+    }
+
+    return groupedVerseTags;
+  };
+
+  VerseTag.findByVerseReferenceIds = function(verseReferenceIds) {
+    var query = "SELECT vr.id AS verseReferenceId, t.title AS tagTitle, b.shortTitle AS bibleBookId, vt.*, " +
+                " vr.absoluteVerseNrEng, vr.absoluteVerseNrHeb FROM VerseReferences vr" +
+                " INNER JOIN VerseTags vt ON vt.verseReferenceId = vr.id" +
+                " INNER JOIN Tags t ON t.id = vt.tagId" +
+                " INNER JOIN BibleBooks b ON vr.bibleBookId = b.id" +
+                " WHERE vr.id IN (" + verseReferenceIds + ")" +
+                " ORDER BY b.number ASC, vr.absoluteVerseNrEng ASC, t.title ASC";
+
+    return sequelize.query(query, { model: models.VerseTag });
+  };
+
+  return VerseTag;
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

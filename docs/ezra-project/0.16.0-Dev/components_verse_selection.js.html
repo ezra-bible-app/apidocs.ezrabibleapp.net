@@ -1,0 +1,505 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Project Design Docs components/verse_selection.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Project Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/tobias-klein/ezra-project"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezra-project.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/verse_selection.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+const VerseBox = require("../ui_models/verse_box.js");
+const VerseReferenceHelper = require("../helpers/verse_reference_helper.js");
+
+/**
+ * The VerseSelection component implements the label that shows the currently selected verses.
+ * 
+ * @category Component
+ */
+class VerseSelection {
+  constructor() {
+    this.selected_verse_references = null;
+    this.selected_verse_box_elements = null;
+  }
+
+  initBibleChapterVerseCounts(bibleChapterVerseCounts, referenceSeparator) {
+    this.verseReferenceHelper = new VerseReferenceHelper(bibleChapterVerseCounts, referenceSeparator);
+  }
+
+  initSelectable(verseList) {
+    if (verseList.hasClass('ui-selectable')) {
+      verseList.selectable('destroy');
+    }
+
+    verseList.selectable({
+      filter: '.verse-text',
+      cancel: '.sword-xref-marker, .verse-notes, .section-header-box, .verse-content-edited, .tag-box, .tag, .load-book-results',
+
+      start: (event, ui) => {
+        // Only reset existing selection if metaKey and ctrlKey are not pressed.
+        // If one of these keys is pressed that indicates that the user wants to select individual non-consecutive verses.
+        // And in this case the start event is fired for each individual verse.
+        if (event.metaKey == false &amp;&amp; event.ctrlKey == false) {
+          this.selected_verse_references = new Array;
+          this.selected_verse_box_elements = new Array;
+        }
+
+        app_controller.handleBodyClick(event);
+      },
+
+      stop: (event, ui) => {
+        this.updateSelected(verseList);
+        this.updateViewsAfterVerseSelection();
+      },
+
+      selected: (event, ui) => {
+        // Not needed anymore!
+      }
+    });
+  }
+
+  init(tabIndex) {
+    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
+    this.initSelectable(currentVerseListFrame);
+
+    // This event handler ensures that the selection is cancelled
+    // if the user clicks somewhere else in the verse list
+    currentVerseListFrame.bind('click', (e) => {
+      if (e.target.matches('.tag-box') ||
+          e.target.matches('.verse-box') ||
+          e.target.matches('.verse-list-frame')) {
+        
+        this.clear_verse_selection();
+        app_controller.handleBodyClick(e);
+      }
+    });
+  }
+
+  getVerseReferenceFromAnchor(anchorText) {
+    var splittedVerseReference = anchorText.split(" ");
+    var currentVerseReference = splittedVerseReference[splittedVerseReference.length - 1];
+    return currentVerseReference;
+  }
+
+  updateSelected(verseList=undefined) {
+    if (verseList == undefined) {
+      var verseList = app_controller.getCurrentVerseList();
+    }
+
+    this.selected_verse_box_elements = verseList.find('.ui-selected').closest('.verse-box');
+    var selectedVerseReferences = [];
+
+    for (var i = 0; i &lt; this.selected_verse_box_elements.length; i++) {
+      var verseBox = $(this.selected_verse_box_elements[i]);
+      var currentVerseReferenceAnchor = verseBox.find('a:first').attr('name');
+      var currentVerseReference = this.getVerseReferenceFromAnchor(currentVerseReferenceAnchor);
+      selectedVerseReferences.push(currentVerseReference);
+    }
+
+    this.selected_verse_references = selectedVerseReferences;
+  }
+
+  clear_verse_selection(updateViews=true) {
+    this.selected_verse_references = new Array;
+    this.selected_verse_box_elements = new Array;
+    $('.verse-text').removeClass('ui-selectee ui-selected ui-state-highlight');
+
+    if (updateViews) {
+      this.updateViewsAfterVerseSelection();
+    }
+  }
+
+  async getSelectedBooks() {
+    var selectedBooks = [];
+
+    for (var i = 0; i &lt; this.selected_verse_box_elements.length; i++) {
+      var currentVerseBox = this.selected_verse_box_elements[i];
+      var currentBookShortName = new VerseBox(currentVerseBox).getBibleBookShortTitle();
+
+      if (!selectedBooks.includes(currentBookShortName)) {
+        selectedBooks.push(currentBookShortName);
+      }
+    }
+
+    return selectedBooks;
+  }
+
+  async getSelectedVerseDisplayText() {
+    var selectedBooks = await this.getSelectedBooks();
+    var selected_verses_content = [];
+
+    for (var i = 0; i &lt; selectedBooks.length; i++) {
+      var currentBookShortName = selectedBooks[i];
+      var currentBookVerseReferences = [];
+      
+      for (var j = 0; j &lt; this.selected_verse_box_elements.length; j++) {
+        var currentVerseBox = this.selected_verse_box_elements[j];
+
+        var currentVerseBibleBookShortName = new VerseBox(currentVerseBox).getBibleBookShortTitle();
+
+        if (currentVerseBibleBookShortName == currentBookShortName) {
+          var currentVerseReference = this.getVerseReferenceFromAnchor($(currentVerseBox).find('a:first').attr('name'));
+          currentBookVerseReferences.push(currentVerseReference);
+        }
+      }
+
+      var formatted_verse_list = this.format_verse_list_for_view(currentBookVerseReferences, true, currentBookShortName);
+      var currentBookName = models.BibleBook.getBookTitleTranslation(currentBookShortName);
+      var currentBookVerseReferenceDisplay = currentBookName + ' ' + formatted_verse_list;
+      selected_verses_content.push(currentBookVerseReferenceDisplay);
+    }
+
+    if (selected_verses_content.length > 0) {
+      return selected_verses_content.join('; ');
+    } else {
+      return i18n.t("tags.none-selected");
+    }
+  }
+
+  verse_list_has_gaps(list) {
+    var has_gaps = false;
+
+    for (var i = 1; i &lt; list.length; i++) {
+      if ((list[i] - list[i-1]) > 1) {
+        has_gaps = true;
+        break;
+      }
+    }
+
+    return has_gaps;
+  }
+
+  format_single_verse_block(list, start_index, end_index, turn_into_link, bookId=undefined) {
+    if (bookId == undefined) {
+      bookId = app_controller.tab_controller.getTab().getBook();
+    }
+
+    if (start_index > (list.length - 1)) start_index = list.length - 1;
+    if (end_index > (list.length - 1)) end_index = list.length - 1;
+
+    var start_reference = list[start_index];
+    var end_reference = list[end_index];
+
+    var formatted_passage = "";
+
+    if (start_reference != undefined &amp;&amp; end_reference != undefined) {
+      formatted_passage = this.format_passage_reference_for_view(bookId,
+                                                                 start_reference,
+                                                                 end_reference);
+
+      if (turn_into_link) {
+        formatted_passage = "&lt;a href=\"javascript:app_controller.jumpToReference('" + start_reference + "', true);\">" + formatted_passage + "&lt;/a>";
+      }
+    }
+
+    return formatted_passage;
+  }
+
+  verse_reference_list_to_absolute_verse_nr_list(list, bookId=undefined) {
+    var new_list = new Array;
+    
+    if (bookId == undefined) {
+      bookId = app_controller.tab_controller.getTab().getBook();
+    }
+
+    for (var i = 0; i &lt; list.length; i++) {
+      new_list.push(Number(this.verseReferenceHelper.referenceStringToAbsoluteVerseNr(bookId, list[i])));
+    }
+
+    return new_list;
+  }
+
+  format_verse_list_for_view(selected_verse_array, link_references, bookId=undefined) {
+    var absolute_nr_list = this.verse_reference_list_to_absolute_verse_nr_list(selected_verse_array, bookId);
+    var verse_list_for_view = "";
+
+    if (selected_verse_array.length > 0) {
+      if (this.verse_list_has_gaps(absolute_nr_list)) {
+        var current_start_index = 0;
+
+        for (var i = 0; i &lt; absolute_nr_list.length; i++) {
+          if (absolute_nr_list[i] - absolute_nr_list[i-1] > 1) {
+
+            var current_end_index = i - 1;
+            
+            verse_list_for_view += this.format_single_verse_block(selected_verse_array,
+                                                                  current_start_index,
+                                                                  current_end_index,
+                                                                  link_references,
+                                                                  bookId);
+
+            verse_list_for_view += "; ";
+
+            if (i == (absolute_nr_list.length - 1)) {
+              verse_list_for_view += this.format_single_verse_block(selected_verse_array,
+                                                                    i,
+                                                                    i,
+                                                                    link_references,
+                                                                    bookId);
+            }
+
+            current_start_index = i;
+          } else {
+            if (i == (absolute_nr_list.length - 1)) {
+              verse_list_for_view += this.format_single_verse_block(selected_verse_array,
+                                                                    current_start_index,
+                                                                    i,
+                                                                    link_references,
+                                                                    bookId)
+            }
+          }
+        }
+      } else { // verse_list doesn't have gaps!
+        verse_list_for_view += this.format_single_verse_block(selected_verse_array,
+                                                              0,
+                                                              selected_verse_array.length - 1,
+                                                              link_references,
+                                                              bookId);
+      }
+    }
+
+    return verse_list_for_view;
+  }
+
+  format_passage_reference_for_view(book_short_title, start_reference, end_reference) {  
+    var start_chapter = start_reference.split(reference_separator)[0];
+    var start_verse = start_reference.split(reference_separator)[1];
+    var end_chapter = end_reference.split(reference_separator)[0];
+    var end_verse = end_reference.split(reference_separator)[1];
+  
+    var passage = start_chapter + reference_separator + start_verse;
+  
+    if (book_short_title != null &amp;&amp;
+        start_verse == "1" &amp;&amp;
+        end_verse == bible_chapter_verse_counts[book_short_title][end_chapter]) {
+  
+      /* Whole chapter sections */
+      
+      if (start_chapter == end_chapter) {
+        passage = 'Chap. ' + start_chapter;
+      } else {
+        passage = 'Chaps. ' + start_chapter + ' - ' + end_chapter;
+      }
+  
+    } else {
+  
+      /* Sections don't span whole chapters */
+  
+      if (start_chapter == end_chapter) {
+        if (start_verse != end_verse) {
+          passage += '-' + end_verse;
+        }
+      } else {
+        passage += ' - ' + end_chapter + reference_separator + end_verse;
+      }
+    }
+  
+    return passage;
+  }
+
+  element_list_to_xml_verse_list(element_list) {
+    var xml_verse_list = "&lt;verse-list>";
+
+    for (var i = 0; i &lt; element_list.length; i++) {
+      var verse_box_element = $(element_list[i]).closest('.verse-box')[0];
+      var verse_reference = verse_box_element.querySelector('.verse-reference-content').innerText;
+      var verse_reference_id = "";
+      var verse_box = new VerseBox(verse_box_element);
+
+      verse_reference_id = verse_box.getVerseReferenceId();
+
+      var verse_bible_book = verse_box.getBibleBookShortTitle();
+      var abs_verse_nr = verse_box.getAbsoluteVerseNumber();
+
+      xml_verse_list += "&lt;verse>";
+      xml_verse_list += "&lt;verse-bible-book>" + verse_bible_book + "&lt;/verse-bible-book>";
+      xml_verse_list += "&lt;verse-reference>" + verse_reference + "&lt;/verse-reference>";
+      xml_verse_list += "&lt;verse-reference-id>" + verse_reference_id + "&lt;/verse-reference-id>";
+      xml_verse_list += "&lt;abs-verse-nr>" + abs_verse_nr + "&lt;/abs-verse-nr>";
+      xml_verse_list += "&lt;/verse>";
+    }
+
+    xml_verse_list += "&lt;/verse-list>";
+
+    return xml_verse_list;
+  }
+
+  current_verse_selection_as_xml() {
+    var selected_verse_elements = this.selected_verse_box_elements;
+
+    return (this.element_list_to_xml_verse_list(selected_verse_elements));
+  }
+
+  current_verse_selection_as_verse_reference_ids() {
+    var selected_verse_ids = new Array;
+    var selected_verse_elements = this.selected_verse_box_elements;
+    
+    for (var i = 0; i &lt; selected_verse_elements.length; i++) {
+      var verse_box_element = selected_verse_elements[i];
+      var verse_box = new VerseBox(verse_box_element);
+      var verse_reference_id = verse_box.getVerseReferenceId();
+
+      selected_verse_ids.push(verse_reference_id);
+    }
+
+    return selected_verse_ids;
+  }
+
+  async updateViewsAfterVerseSelection() {
+    var selectedVerseDisplayText = await this.getSelectedVerseDisplayText();
+    this.getSelectedVersesLabel().html(selectedVerseDisplayText);
+
+    await tags_controller.update_tags_view_after_verse_selection(false);
+
+    if (this.selected_verse_box_elements.length > 0) { // Verses are selected!
+      app_controller.translationComparison.enableComparisonButton();
+    } else { // No verses selected!
+      app_controller.translationComparison.disableComparisonButton();
+    }
+
+    var tabId = app_controller.tab_controller.getSelectedTabId();
+    if (tabId !== undefined) {
+      uiHelper.configureButtonStyles('#' + tabId);
+    }
+  }
+
+  getSelectedVersesLabel() {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    return $(currentVerseListMenu.find('.selected-verses')[0]);
+  }
+}
+
+module.exports = VerseSelection;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

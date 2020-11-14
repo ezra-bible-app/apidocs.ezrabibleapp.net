@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="SwordNotes.html">SwordNotes</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div>
                 
             </nav>
         </div>
@@ -163,8 +163,8 @@ class AppController {
     this.init_component("TagAssignmentMenu", "tag_assignment_menu", "../components/tags/tag_assignment_menu.js");
     this.init_component("ModuleSearch", "module_search", "../components/module_search.js");
     this.init_component("TranslationController", "translation_controller", "./translation_controller.js");
-    this.init_component("InstallModuleWizard", "install_module_wizard", "../components/module_wizard/install_module_wizard.js");
-    this.init_component("RemoveModuleWizard", "remove_module_wizard", "../components/module_wizard/remove_module_wizard.js");
+    this.init_component("InstallModuleAssistant", "install_module_assistant", "../components/module_assistant/install_module_assistant.js");
+    this.init_component("RemoveModuleAssistant", "remove_module_assistant", "../components/module_assistant/remove_module_assistant.js");
     this.init_component("TextController", "text_controller", "./text_controller.js");
     this.init_component("VerseContextController", "verse_context_controller", "./verse_context_controller.js");
     this.init_component("BookSearch", "tab_search", "../components/tab_search/tab_search.js");
@@ -187,7 +187,7 @@ class AppController {
       await this.onBibleTranslationChanged(oldBibleTranslationId, newBibleTranslationId);
     });
 
-    this.remove_module_wizard.init(() => { this.onAllTranslationsRemoved(); },
+    this.remove_module_assistant.init(() => { this.onAllTranslationsRemoved(); },
                                    (translationId) => { this.onTranslationRemoved(translationId); });
 
     this.tab_search.init('#tab-search',
@@ -954,9 +954,9 @@ class AppController {
     }
   }
 
-  openModuleSettingsWizard(moduleType) {
+  openModuleSettingsAssistant(moduleType) {
     this.optionsMenu.hideDisplayMenu();
-    this.install_module_wizard.openWizard(moduleType);
+    this.install_module_assistant.openAssistant(moduleType);
   }
 
   getChapterFromReference(reference) {

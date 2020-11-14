@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Project Design Docs components/module_assistant/remove_module_assistant.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Project Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/tobias-klein/ezra-project"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezra-project.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>components/module_assistant/remove_module_assistant.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+const LanguageMapper = require('../../helpers/language_mapper.js');
+const ModuleAssistantHelper = require('./module_assistant_helper.js');
+
+/**
+ * The RemoteModuleAssistant component implements the dialog that handles module removals.
+ * 
+ * @category Component
+ */
+class RemoveModuleAssistant {
+  constructor() {
+    this._helper = new ModuleAssistantHelper();
+    this._moduleRemovalStatus = 'DONE';
+    this.languageMapper = new LanguageMapper();
+
+    var removeButton = $('#remove-modules-button');
+
+    removeButton.bind('click', () => {
+      var currentModuleType = app_controller.install_module_assistant._currentModuleType;
+
+      var modules = app_controller.translation_controller.getInstalledModules(currentModuleType);
+      if (modules.length > 0) {
+        this.openRemoveModuleAssistant(currentModuleType);
+      }
+    });
+  }
+
+  init(onAllTranslationsRemoved, onTranslationRemoved) {
+    this.onAllTranslationsRemoved = onAllTranslationsRemoved;
+    this.onTranslationRemoved = onTranslationRemoved;
+  }
+
+  openRemoveModuleAssistant(moduleType) {
+    $('#module-settings-assistant-init').hide();
+    this.initRemoveModuleAssistant(moduleType);
+    $('#module-settings-assistant-remove').show();
+
+    var wizardPage = $('#module-settings-assistant-remove-p-0');
+    wizardPage.empty();
+
+    var headerText = "";
+    if (moduleType == 'BIBLE') {
+      headerText = i18n.t("module-assistant.select-translations-to-be-removed");
+    } else if (moduleType == 'DICT') {
+      headerText = i18n.t("module-assistant.select-dictionaries-to-be-removed");
+    }
+
+    var header = "&lt;p>" + headerText + "&lt;/p>";
+    wizardPage.append(header);
+
+    wizardPage.append("&lt;div id='remove-module-list'>&lt;/div>");
+    var removeModuleList = $('#remove-module-list');
+
+    var languages = app_controller.translation_controller.getLanguages(moduleType);
+
+    for (var i = 0; i &lt; languages.length; i++) {
+      var currentLang = languages[i];
+
+      var newLanguageBox = "&lt;div>" +
+                           "&lt;h2>" + currentLang.languageName + "&lt;/h2>" +
+                           "&lt;div id='remove-module-assistant-" + currentLang.languageCode + "-modules'>&lt;/div>" +
+                           "&lt;/div>";
+
+      removeModuleList.append(newLanguageBox);
+    }
+
+    var modules = nsi.getAllLocalModules(moduleType);
+
+    for (var module of modules) {
+      var checkboxDisabled = '';
+      var currentModuleClass = "class='label' ";
+      var fixedDictionaries = [ "StrongsHebrew", "StrongsGreek" ];
+      
+      if (!nsi.isModuleInUserDir(module.name) ||
+          (moduleType == "DICT" &amp;&amp; fixedDictionaries.includes(module.name))) {
+
+        checkboxDisabled = "disabled='disabled' ";
+        currentModuleClass = "class='label disabled'";
+      }
+
+      var currentTranslationHtml = "&lt;p>&lt;input type='checkbox'" + checkboxDisabled + ">" + 
+                                    "&lt;span " + currentModuleClass + " id='" + module.name + "'>";
+      currentTranslationHtml += module.description + " [" + module.name + "]&lt;/span>&lt;/p>";
+
+      var languageBox = $('#remove-module-assistant-' + module.language + '-modules');
+      languageBox.append(currentTranslationHtml);
+    }
+
+    this._helper.bindLabelEvents(wizardPage);
+  }
+
+  initRemoveModuleAssistant() {
+    if (this._removeModuleAssistantOriginalContent != undefined) {
+        $('#module-settings-assistant-remove').steps("destroy");
+        $('#module-settings-assistant-remove').html(this._removeModuleAssistantOriginalContent);
+    } else {
+        this._removeModuleAssistantOriginalContent = $('#module-settings-assistant-remove').html();
+    }
+
+    $('.module-settings-assistant-section-header-module-type').html(app_controller.install_module_assistant._moduleTypeText);
+
+    $('#module-settings-assistant-remove').steps({
+      headerTag: "h3",
+      bodyTag: "section",
+      contentContainerTag: "module-settings-assistant-remove",
+      autoFocus: true,
+      stepsOrientation: 1,
+      onStepChanging: (event, currentIndex, newIndex) => this.removeModuleAssistantStepChanging(event, currentIndex, newIndex),
+      onStepChanged: (event, currentIndex, priorIndex) => this.removeModuleAssistantStepChanged(event, currentIndex, priorIndex),
+      onFinishing: (event, currentIndex) => this.removeModuleAssistantFinishing(event, currentIndex),
+      onFinished: (event, currentIndex) => this.removeModuleAssistantFinished(event, currentIndex),
+      labels: {
+        cancel: i18n.t("general.cancel"),
+        finish: i18n.t("general.finish"),
+        next: i18n.t("general.next"),
+        previous: i18n.t("general.previous")
+      }
+    });
+  }
+
+  removeModuleAssistantStepChanging(event, currentIndex, newIndex) {
+    if (currentIndex == 0 &amp;&amp; newIndex == 1) { // Changing from Translations (1) to Removal (2)
+      var wizardPage = "#module-settings-assistant-remove-p-0";
+      var selectedLanguages = this._helper.getSelectedSettingsAssistantElements(wizardPage);
+      return (selectedLanguages.length > 0);
+    } else if (currentIndex == 1 &amp;&amp; newIndex != 1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async removeModuleAssistantStepChanged(event, currentIndex, priorIndex) {
+    if (priorIndex == 0) {
+      this._helper.lockDialogForAction('module-settings-assistant-remove');
+
+      // Bible modules have been selected
+      var modulesPage = "#module-settings-assistant-remove-p-0";
+      this._uninstallModules = this._helper.getSelectedSettingsAssistantElements(modulesPage);
+
+      this._moduleRemovalStatus = 'IN_PROGRESS';
+
+      var removalPage = $("#module-settings-assistant-remove-p-1");
+      removalPage.empty();
+
+      var currentModuleType = app_controller.install_module_assistant._currentModuleType;
+      var removingModules = "";
+      if (currentModuleType == 'BIBLE') {
+        removingModules = i18n.t("module-assistant.removing-translations");
+      } else if (currentModuleType == 'DICT') {
+        removingModules = i18n.t("module-assistant.removing-dictionaries");
+      }
+
+      removalPage.append('&lt;h3>' + removingModules + '&lt;/h3>');
+
+      setTimeout(async () => {
+        for (var i = 0; i &lt; this._uninstallModules.length; i++) {
+          var moduleCode = this._uninstallModules[i];
+          var localModule = nsi.getLocalModule(moduleCode);
+          var moduleName = localModule.description;
+
+          removalPage.append('&lt;span>' + i18n.t("module-assistant.removing") + ' &lt;i>' + moduleName + '&lt;/i> ... &lt;/span>');
+          
+          await nsi.uninstallModule(moduleCode);
+
+          var currentBibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+          if (currentBibleTranslationId == moduleCode) {
+            var modules = app_controller.translation_controller.getInstalledModules('BIBLE');
+
+            if (modules.length > 0) {
+              // FIXME: Also put this in a callback
+              app_controller.tab_controller.setCurrentBibleTranslationId(modules[0]);
+              app_controller.onBibleTranslationChanged();
+              app_controller.navigation_pane.updateNavigation();
+            } else {
+              this.onAllTranslationsRemoved();
+            }
+
+            this.onTranslationRemoved(moduleCode);
+          }
+
+          removalPage.append('&lt;span>' + i18n.t("general.done") + '.&lt;/span>');
+          removalPage.append('&lt;br/>&lt;br/>');
+        }
+
+        this._moduleRemovalStatus = 'DONE';
+        this._helper.unlockDialog('module-settings-assistant-remove');
+      }, 800);
+    }
+  }
+
+  removeModuleAssistantFinishing(event, currentIndex) {
+    return this._moduleRemovalStatus != 'IN_PROGRESS';
+  }
+
+  removeModuleAssistantFinished(event, currentIndex) {
+    $('#module-settings-assistant').dialog('close');
+    this._installedTranslations = app_controller.translation_controller.getInstalledModules('BIBLE');
+    app_controller.translation_controller.initTranslationsMenu();
+  }
+}
+
+module.exports = RemoveModuleAssistant;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

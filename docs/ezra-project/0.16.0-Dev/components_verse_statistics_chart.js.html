@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Project Design Docs BookSelectionMenu</title>
+  <title>Ezra Project Design Docs components/verse_statistics_chart.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -93,156 +95,181 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Class</p>
-                    <h1>BookSelectionMenu</h1>
+                    <p>Source</p>
+                    <h1>components/verse_statistics_chart.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>BookSelectionMenu<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description"><p>The BookSelectionMenu class implements all event handling for the book selection menu.</p></div>
-        
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+
+/**
+ * The VerseStatisticsChart component renders a chart with verse count statistics per bible book. This is used by the ModuleSearch component.
+ * 
+ * @category Component
+ */
+class VerseStatisticsChart {
+  constructor() {
+    require('chart.js/dist/Chart.bundle.min.js');
+
+    this.chartColors = {
+      red: 'rgb(255, 99, 132)',
+      orange: 'rgb(255, 159, 64)',
+      yellow: 'rgb(255, 205, 86)',
+      green: 'rgb(75, 192, 192)',
+      blue: 'rgb(54, 162, 235)',
+      purple: 'rgb(153, 102, 255)',
+      grey: 'rgb(201, 203, 207)'
+    };
+  }
+
+  getVerseStatisticsChart(tabIndex=undefined) {
+    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
+    return currentVerseListFrame.find('.verse-statistics-chart');
+  }
+
+  resetChart(tabIndex=undefined) {
+    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
+    var container = currentVerseListFrame.find('.verse-statistics-chart-container');
+
+    container.hide();
+    container.empty();
+
+    var canvasElement = "&lt;canvas class='verse-statistics-chart'>&lt;/canvas>";
+    container.append(canvasElement);
+  }
+
+  getLabelsAndValuesFromStats(bookList, bibleBookStats) {
+    var labels = [];
+    var values = [];
+    var ntOnly = true;
+    var otOnly = true;
+
+    for (var book in bibleBookStats) {
+      if (!models.BibleBook.isNtBook(book)) {
+        ntOnly = false;
+      }
+
+      if (!models.BibleBook.isOtBook(book)) {
+        otOnly = false;
+      }
+    }
     
-</header>
+    bookList.forEach((book) => {
+      var includeCurrentBook = false;
 
-<article>
-    <div class="container-overview">
+      if (ntOnly &amp;&amp; models.BibleBook.isNtBook(book)) {
+        includeCurrentBook = true;
+      } else if (otOnly &amp;&amp; models.BibleBook.isOtBook(book)) {
+        includeCurrentBook = true;
+      } else if (!otOnly &amp;&amp; !ntOnly) {
+        includeCurrentBook = true;
+      }
+
+      if (includeCurrentBook) {
+        var translatedBook = i18nHelper.getBookAbbreviation(book);
+        labels.push(translatedBook);
+
+        var value = 0;
+        if (book in bibleBookStats) {
+          value = bibleBookStats[book];
+        }
+
+        values.push(value);
+      }
+    });
+
+    return [labels, values];
+  }
+
+  updateChart(tabIndex=undefined, bibleBookStats) {
+    var numberOfBooks = Object.keys(bibleBookStats).length;
+    if (numberOfBooks &lt; 2) {
+      return;
+    }
     
-        
-            <div class='vertical-section'>
-                <div class="members">
-                    <div class="member">
-                        <div class=name>
-                            <span class="tag">Constructor</span>
-                        </div>
-                        
+    var currentTranslation = app_controller.tab_controller.getTab(tabIndex)?.getBibleTranslationId();
+    var bookList = nsi.getBookList(currentTranslation);
 
+    const [labels, values] = this.getLabelsAndValuesFromStats(bookList, bibleBookStats);
 
+    var data = {
+      labels: labels,
+      datasets: [{
+          data: values,
+          backgroundColor: this.chartColors.blue,
+          borderWidth: 1
+      }]
+    };
+
+    var chartElement = this.getVerseStatisticsChart(tabIndex);
+    var useNightMode = app_controller.optionsMenu._nightModeOption.isChecked();
+    var labelFontColor = useNightMode ? "white" : "black";
     
-    <h4 class="name" id="BookSelectionMenu">
-        <a class="href-link" href="#BookSelectionMenu">#</a>
-        
-        <span class="code-name">
-            
-                new BookSelectionMenu<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
+    new Chart(chartElement, {
+      type: 'bar',
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        scaleShowValues: true,
+        scales: {
+          xAxes: [{
+            ticks: {
+              autoSkip: false,
+              fontSize: 10,
+              fontColor: labelFontColor,
+            },
+            // grid line settings
+            gridLines: {
+              drawOnChartArea: false, // only want the grid lines for one axis to show up
+            },
+          }],
+          yAxes: [{
+            gridLines: {
+              color: this.chartColors.grey,
+              zeroLineColor: this.chartColors.grey
+            },
+            ticks: {
+              fontColor: labelFontColor,
+              precision: 0
+            }
+          }]
+        }
+      }
+    });
 
-    
-    
+    $(chartElement).parent().show();
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="components_book_selection_menu.js.html" class="button">View Source</a>
-            <span>
-                <a href="components_book_selection_menu.js.html">components/book_selection_menu.js</a>, <a href="components_book_selection_menu.js.html#line24">line 24</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+module.exports = VerseStatisticsChart;</code></pre>
+        </article>
+    </section>
 
 
 

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Project Design Docs BookSelectionMenu</title>
+  <title>Ezra Project Design Docs components/tags/tag_assignment_menu.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -93,156 +95,149 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Class</p>
-                    <h1>BookSelectionMenu</h1>
+                    <p>Source</p>
+                    <h1>components/tags/tag_assignment_menu.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>BookSelectionMenu<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description"><p>The BookSelectionMenu class implements all event handling for the book selection menu.</p></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class='vertical-section'>
-                <div class="members">
-                    <div class="member">
-                        <div class=name>
-                            <span class="tag">Constructor</span>
-                        </div>
-                        
-
-
-    
-    <h4 class="name" id="BookSelectionMenu">
-        <a class="href-link" href="#BookSelectionMenu">#</a>
-        
-        <span class="code-name">
-            
-                new BookSelectionMenu<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="components_book_selection_menu.js.html" class="button">View Source</a>
-            <span>
-                <a href="components_book_selection_menu.js.html">components/book_selection_menu.js</a>, <a href="components_book_selection_menu.js.html#line24">line 24</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+/**
+ * The TagAssignmentMenu component implements the menu event handling and dynamic movement of the tag assignment menu,
+ * which can move between the left toolbar and the dropdown button in the verse list menu.
+ * 
+ * @category Component
+ */
+class TagAssignmentMenu {
+  constructor() {
+    this.menuIsOpened = false;
+  }
+
+  init(tabIndex=undefined) {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+    currentVerseListMenu.find('.assign-tag-menu-button').bind('click', (event) => { this.handleMenuClick(event); });
+  }
+
+  getMenu() {
+    return $('#app-container').find('#tag-assignment-menu');
+  }
+
+  getCurrentMenuButton() {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    var assignTagMenuButton = currentVerseListMenu.find('.assign-tag-menu-button');
+    return assignTagMenuButton;  
+  }
+
+  hideTagAssignmentMenu() {
+    if (this.menuIsOpened) {
+      this.getMenu().hide();
+      this.menuIsOpened = false;
+
+      var assignTagMenuButton = $('#app-container').find('.assign-tag-menu-button');
+      assignTagMenuButton.removeClass('ui-state-active');
+    }
+  }
+
+  async handleMenuClick(event) {
+    var assignTagMenuButton = this.getCurrentMenuButton();
+
+    if (assignTagMenuButton.hasClass('ui-state-disabled')) {
+      return;
+    }
+
+    if (this.menuIsOpened) {
+      app_controller.handleBodyClick();
+    } else {
+      app_controller.book_selection_menu.hide_book_menu();
+      app_controller.tag_selection_menu.hideTagMenu();
+      app_controller.module_search.hideSearchMenu();
+      app_controller.optionsMenu.hideDisplayMenu();
+
+      assignTagMenuButton.addClass('ui-state-active');
+      var buttonOffset = assignTagMenuButton.offset();
+      var menu = this.getMenu();
+      var topOffset = buttonOffset.top + assignTagMenuButton.height() + 12;
+      var leftOffset = buttonOffset.left;
+
+      menu.css('top', topOffset);
+      menu.css('left', leftOffset);
+
+      menu.show();
+      this.menuIsOpened = true;
+      event.stopPropagation();
+    }
+  }
+
+  getTagsContainer() {
+    return document.getElementById('tags-content-global');
+  }
+
+  getTagsContainerParentId() {
+    var tagsContainer = this.getTagsContainer();
+    return tagsContainer.parentNode.getAttribute('id');
+  }
+
+  moveTagAssignmentList(moveToMenu=false) {
+    var tagsContainer = this.getTagsContainer();
+    var parentId = this.getTagsContainerParentId();
+    var toolBarId = 'tags-content';
+    var menuId = 'tag-assignment-menu-taglist';
+    var filterId = 'tag-assignment-menu-filter';
+
+    var assignTagMenuButton = this.getCurrentMenuButton();
+
+    if (moveToMenu) {
+      assignTagMenuButton.show();
+    } else {
+      assignTagMenuButton.hide();
+    }
+
+    var updated = false;
+
+    if (parentId == toolBarId &amp;&amp; moveToMenu) {
+      var menu = document.getElementById(menuId);
+      menu.appendChild(tagsContainer);
+      var filter = document.getElementById(filterId);
+      var tagsSearchInput = document.getElementById('tags-search-input');
+      filter.appendChild(tagsSearchInput);
+      updated = true;
+
+    } else if (parentId == menuId &amp;&amp; !moveToMenu) {
+      tags_controller.handle_tag_accordion_change();
+      var toolBar = document.getElementById(toolBarId);
+      toolBar.appendChild(tagsContainer);
+      updated = true;
+
+    }
+
+    return updated;
+  }
+}
+
+module.exports = TagAssignmentMenu;</code></pre>
+        </article>
+    </section>
 
 
 

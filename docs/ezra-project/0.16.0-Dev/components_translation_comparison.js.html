@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Project Design Docs controllers/theme_controller.js</title>
+  <title>Ezra Project Design Docs components/translation_comparison.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -96,7 +96,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>controllers/theme_controller.js</h1>
+                    <h1>components/translation_comparison.js</h1>
                 </header>
                 
 
@@ -123,149 +123,147 @@
    along with Ezra Project. See the file LICENSE.
    If not, see &lt;http://www.gnu.org/licenses/>. */
 
-const Darkmode = require('darkmode-js');
+const VerseBox = require("../ui_models/verse_box.js");
 
 /**
- * The ThemeController contains functions for switching between the standard (light theme)
- * and the dark "night" theme. Whenever the user switches the "night mode" in the options menu, this controller
- * processes the change.
+ * The TranslationComparison component implements a dialog that shows selected verses
+ * in a comparison table using all available Bible translations.
  * 
- * Like all other controllers it is only initialized once. It is accessible at the
- * global object `app_controller.theme_controller`.
- * 
- * @category Controller
+ * @category Component
  */
-class ThemeController {
+class TranslationComparison {
   constructor() {
-    this.darkMode = null;
+    this.initCompareTranslationsBox();
   }
 
-  earlyInitNightMode() {
-    var useDarkMode = false;
-
-    if (platformHelper.isMacOsMojaveOrLater()) {
-      const nativeTheme = require('electron').remote.nativeTheme;
-
-      if (nativeTheme.shouldUseDarkColors) {
-        useDarkMode = true;
-      }
-    } else {
-      var settings = require('electron-settings');
-
-      if (settings.get('useNightMode')) {
-        useDarkMode = true;
-      }
-    }
-
-    if (useDarkMode) {
-      document.body.classList.add('darkmode--activated');
-    }
+  getButton() {
+    return $('.show-parallel-translations-button');
   }
 
-  initNightMode() {
-    if (platformHelper.isMacOsMojaveOrLater()) { // On macOS (from Mojave) we initialize night mode based on the system settings
-      const nativeTheme = require('electron').remote.nativeTheme;
-
-      // Set up a listener to react when the native theme has changed
-      nativeTheme.on('updated', () => {
-        if (nativeTheme.shouldUseDarkColors != app_controller.optionsMenu._nightModeOption.isChecked()) {
-          showGlobalLoadingIndicator();
-
-          setTimeout(() => {
-            this.toggleDarkModeIfNeeded();
-          }, 100);
-        }
-      });
-
-      if (nativeTheme.shouldUseDarkColors != app_controller.optionsMenu._nightModeOption.isChecked()) {
-        console.log("Initializing night mode based on system settings ...");
-        this.toggleDarkModeIfNeeded();
+  initButtonEvents() {
+    this.getButton().bind('click', async () => {
+      if (this.isButtonEnabled()) {
+        await this.handleButtonClick();
       }
+    });
+  }
 
-    } else { // On other systems we initialize night mode based on the application settings
+  getBox() {
+    return $('#compare-translations-box');
+  }
 
-      if (app_controller.settings.has('useNightMode')) {
-        var useNightMode = app_controller.settings.get('useNightMode');
+  getBoxContent() {
+    return $('#compare-translations-box-content');
+  }
+
+  isButtonEnabled() {
+    return !(this.getButton().hasClass('ui-state-disabled'));
+  }
+
+  enableComparisonButton() {
+    this.getButton().removeClass('ui-state-disabled');
+  }
+
+  disableComparisonButton() {
+    this.getButton().addClass('ui-state-disabled');
+  }
+
+  initCompareTranslationsBox() {
+    this.getBox().dialog({
+      width: 700,
+      height: 500,
+      autoOpen: false,
+      dialogClass: 'ezra-dialog'
+    });
+  };
+
+  getVerseHtmlByTranslationId(sourceBibleTranslationId, targetTranslationId, verseBox) {
+    var referenceVerseBox = new VerseBox(verseBox[0]);
+    var bibleBookShortTitle = referenceVerseBox.getBibleBookShortTitle();
+    var mappedAbsoluteVerseNumber = referenceVerseBox.getMappedAbsoluteVerseNumber(sourceBibleTranslationId, targetTranslationId);
+
+    var targetTranslationVerse = nsi.getBookText(targetTranslationId,
+                                                 bibleBookShortTitle,
+                                                 mappedAbsoluteVerseNumber,
+                                                 1)[0];
     
-        if (useNightMode) {
-          console.log("Initializing night mode based on app settings ...");
-          this.useNightModeBasedOnOption(true);
+    var verseHtml = "&lt;tr>";
+    
+    if (targetTranslationVerse == null) {
+      console.log("Couldn't get verse " + bibleBookShortTitle + ' / ' + mappedAbsoluteVerseNumber + " for " + targetTranslationId);
+      verseHtml += "&lt;td>&lt;/td>&lt;td>&lt;/td>";
+    } else {
+      var targetVerseReference = targetTranslationVerse.chapter + reference_separator + targetTranslationVerse.verseNr;
+                                  
+      verseHtml +=  "&lt;td class='verse-reference-td'>" + targetVerseReference + "&lt;/td>";
+      verseHtml += "&lt;td class='verse-content-td'>" + targetTranslationVerse.content + "&lt;/td>";
+    }
+
+    verseHtml += "&lt;/tr>";
+
+    return verseHtml;
+  }
+
+  async getCompareTranslationContent() {
+    var sourceTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+    var selectedVerseBoxes = app_controller.verse_selection.selected_verse_box_elements;
+    var compareTranslationContent = "&lt;table>";
+    var allTranslations = nsi.getAllLocalModules();
+
+    if (selectedVerseBoxes.length > 0) {
+      for (var i = 0; i &lt; allTranslations.length; i++) {
+        var currentTranslationId = allTranslations[i].name;
+        var currentTranslationName = allTranslations[i].description;
+        var cssClass = '';
+        if (i &lt; allTranslations.length) {
+          cssClass = 'compare-translation-row';
         }
-      }
-    }
-  }
 
-  toggleDarkModeIfNeeded() {
-    if (platformHelper.isMacOsMojaveOrLater()) {
-      const nativeTheme = require('electron').remote.nativeTheme;
+        compareTranslationContent += "&lt;tr class='" + cssClass + "'>";
+        compareTranslationContent += "&lt;td class='compare-translation-row' style='width: 16em; padding: 0.5em;'>" + currentTranslationName + "&lt;/td>";
+        compareTranslationContent += "&lt;td class='compare-translation-row'>&lt;table>";
 
-      if (nativeTheme.shouldUseDarkColors) {
-        app_controller.optionsMenu._nightModeOption.enableOption();
-      } else {
-        app_controller.optionsMenu._nightModeOption.disableOption();
-      }
+        for (var j = 0; j &lt; selectedVerseBoxes.length; j++) {
+          var currentVerseBox = $(selectedVerseBoxes[j]);
+          var verseHtml = this.getVerseHtmlByTranslationId(sourceTranslationId, currentTranslationId, currentVerseBox);
+          compareTranslationContent += verseHtml;
+        }
 
-      this.useNightModeBasedOnOption();
-    }
-  }
+        compareTranslationContent += "&lt;/table>&lt;/td>";
 
-  switchToDarkTheme() {
-    this.switchToTheme('css/jquery-ui/dark-hive/jquery-ui.css');
-    app_controller.notes_controller.setDarkTheme();
-  }
-  
-  switchToRegularTheme() {
-    this.switchToTheme('css/jquery-ui/cupertino/jquery-ui.css');
-    app_controller.notes_controller.setLightTheme();
-  }
-  
-  switchToTheme(theme) {
-    var currentTheme = document.getElementById("theme-css").href;
-  
-    if (currentTheme.indexOf(theme) == -1) { // Only switch the theme if it is different from the current theme
-      document.getElementById("theme-css").href = theme;
-    }
-  }
-
-  useNightModeBasedOnOption(force=false) {
-    if (force || app_controller.optionsMenu._nightModeOption.isChecked(force)) {
-      this.switchToDarkTheme();
-    } else {
-      this.switchToRegularTheme();
-    }
-
-    if (this.darkMode == null) {
-      this.darkMode = new Darkmode();
-    }
-
-    var nightModeOptionChecked = force ? true : app_controller.optionsMenu._nightModeOption?.isChecked();
-
-    if (nightModeOptionChecked &amp;&amp; !this.darkMode.isActivated() ||
-        !nightModeOptionChecked &amp;&amp; this.darkMode.isActivated()) {
-          
-      this.darkMode.toggle();
-      // We need to repaint all charts, because the label color depends on the theme
-      app_controller.module_search.repaintAllCharts();
-    }
-  }
-
-  isNightModeUsed() {
-    var useNightMode = false;
-
-    if (platformHelper.isMacOsMojaveOrLater()) {
-      const nativeTheme = require('electron').remote.nativeTheme;
-      useNightMode = nativeTheme.shouldUseDarkColors;
-    } else {
-      if (app_controller.settings.has('useNightMode')) {
-        useNightMode = app_controller.settings.get('useNightMode');
+        compareTranslationContent += "&lt;/tr>";
       }
     }
 
-    return useNightMode;
+    compareTranslationContent += "&lt;/table>";
+    return compareTranslationContent;
+  }
+
+  async handleButtonClick() {
+    var boxTitle = i18n.t("bible-browser.comparing-translations-for") + " " + 
+      app_controller.verse_selection.getSelectedVersesLabel().text();
+
+    this.getBox().dialog({
+      title: boxTitle
+    });
+
+    this.getBoxContent().html("");
+
+    $('#compare-translations-loading-indicator').find('.loader').show();
+    $('#compare-translations-loading-indicator').show();
+
+    this.getBox().dialog("open");
+
+    setTimeout(async () => {
+      var compareTranslationContent = await this.getCompareTranslationContent();
+
+      $('#compare-translations-loading-indicator').hide();
+      this.getBoxContent().html(compareTranslationContent);
+    }, 50);
   }
 }
 
-module.exports = ThemeController;</code></pre>
+module.exports = TranslationComparison;</code></pre>
         </article>
     </section>
 

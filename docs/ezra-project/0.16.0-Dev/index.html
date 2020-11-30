@@ -60,7 +60,7 @@
                     
                         <a
                             class="link user-link "
-                            href="https://github.com/tobias-klein/ezra-project"
+                            href="https://github.com/ezra-project/ezra-project"
                         >
                             GitHub repo
                         </a>
@@ -123,6 +123,11 @@
         <article><p>Welcome to the Design documentation of Ezra Project!</p>
 <p><a href='#file-structure'>File structure</a> | <a href='#db-schema'>Database schema</a></p>
 <h2>Architecture overview</h2>
+<h3>Controllers</h3>
+<p>Controllers are classes that manage one or several (graphical) components and usually also interact with the Ezra Project database, e.g. the <code>TagsController</code> and <code>NotesController</code>.</p>
+<h3>Components</h3>
+<p>Components are classes that usually represent one specific &quot;graphical component&quot; of the UI, e.g. the options menu or the book selection menu.</p>
+<h3>The big picture</h3>
 <div class="mermaid">
 erDiagram
     ezra_init                 ||--|{    HTML-Component            : loads
@@ -138,7 +143,7 @@ erDiagram
     Sequelize-Model           ||--||    SQLite-DB-Table           : maps
     node-sword-interface      ||--||    SWORD-Engine              : wraps
 </div>
-<a name='file-structure'>
+<p><a name='file-structure'></a></p>
 <h2>File structure</h2>
 <p>On the top-level these are the most relevant files and directories.</p>
 <h3>main.js</h3>
@@ -163,14 +168,14 @@ erDiagram
 <p>This directory contains static HTML files (e.g. for the book selection menu, the display options menu, etc.). These files are loaded dynamically into the DOM by <code>ezra_init.js</code>.</p>
 <h3>locales</h3>
 <p>Here you find <a href="https://www.i18next.com/">i18next</a> locale files (JSON format).</p>
-<a name='db-schema'>
+<p><a name='db-schema'></a></p>
 <h2>Database schema</h2>
 <div class="mermaid">
 erDiagram
     BibleBook                 ||--|{    VerseReference      : has
-    VerseReference            ||--|{    VerseTag            : has
     Note                      o|--||    VerseReference      : has
-    VerseTag                  ||--||    Tag                 : has
+    VerseReference            ||--|{    VerseTag            : has
+    Tag                       ||--|{    VerseTag            : has
 </div>
 <script src="https://unpkg.com/mermaid@8.8.3/dist/mermaid.min.js"></script></article>
     </section>

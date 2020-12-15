@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -123,6 +123,9 @@
    along with Ezra Project. See the file LICENSE.
    If not, see &lt;http://www.gnu.org/licenses/>. */
 
+const VerseBoxHelper = require('../helpers/verse_box_helper.js');
+const VerseBox = require('../ui_models/verse_box.js');
+
 /**
  * The NavigationPane class implements the update and event handling of the
  * navigation pane that is shown left of the bible text pane.
@@ -132,6 +135,7 @@
 class NavigationPane {
   constructor() {
     this.currentNavigationPane = null;
+    this.verse_box_helper = new VerseBoxHelper();
   }
 
   getCurrentNavigationPane(tabIndex) {
@@ -181,9 +185,15 @@ class NavigationPane {
     navigationPane.bind('mouseover', app_controller.verse_context_controller.hide_verse_expand_box);
   }
 
-  enableHeaderNavigation() {
-    var navigationPane = this.getCurrentNavigationPane();
-    navigationPane.addClass('navigation-pane-headers');
+  enableHeaderNavigation(tabIndex=undefined) {
+    var navigationPane = this.getCurrentNavigationPane(tabIndex);
+    var currentTab = app_controller.tab_controller.getTab(tabIndex);
+    var currentTranslationId = currentTab.getBibleTranslationId();
+    
+    if (app_controller.translation_controller.hasBibleTranslationHeaders(currentTranslationId)) {
+
+      navigationPane.addClass('navigation-pane-headers');
+    }
   }
 
   disableHeaderNavigation() {
@@ -286,12 +296,16 @@ class NavigationPane {
     var currentBook = currentTab.getBook();
     var chapterCount = nsi.getBookChapterCount(currentTranslation, currentBook);
     var currentVerseList = app_controller.getCurrentVerseList(tabIndex);
-    var sectionTitleElements = currentVerseList.find('.sword-section-title');
+
+    var query = '.sword-section-title:not([subtype="x-Chapter"]):not([type="chapter"]):not([type="psalm"]):not([type="scope"]):not([type="acrostic"])';
+    var sectionTitleElements = currentVerseList.find(query);
 
     var navigationHeader = document.createElement('div');
     navigationHeader.classList.add('nav-pane-header');
     navigationHeader.innerText = i18n.t('bible-browser.chapter-header');
     navigationPane.append(navigationHeader);
+
+    var cachedVerseListTabId = this.getCachedVerseListTabId(tabIndex);
     var sectionHeaderNumber = 1;
 
     for (var i = 1; i &lt;= chapterCount; i++) {
@@ -302,40 +316,32 @@ class NavigationPane {
       $(current_chapter_link).html(i);
       navigationPane.append(current_chapter_link);
 
-      sectionHeaderNumber = this.addHeaderNavLinksForChapter(tabIndex, navigationPane, sectionTitleElements, i, sectionHeaderNumber);
+      sectionHeaderNumber = this.addHeaderNavLinksForChapter(cachedVerseListTabId, navigationPane, sectionTitleElements, i, sectionHeaderNumber);
     }
   }
 
-  getUnixSectionHeaderId(tabId, sectionHeader) {
-    var unixSectionHeader = sectionHeader.toLowerCase();
-    unixSectionHeader = unixSectionHeader.replace(/ /g, "-").replace(/['`()]/g, "");
-    var unixSectionHeaderId = tabId + ' ' + 'section-header-' + unixSectionHeader;
+  getUnixSectionHeaderId(tabId, chapter, sectionHeader) {
+    var unixSectionHeader = sectionHeader.trim().toLowerCase();
+    unixSectionHeader = unixSectionHeader.replace(/ /g, "-").replace(/['`().,;:!?]/g, "");
+    var unixSectionHeaderId = tabId + ' ' + chapter + ' ' + 'section-header-' + unixSectionHeader;
     return unixSectionHeaderId;
   }
 
-  addHeaderNavLinksForChapter(tabIndex, navigationPane, sectionTitleElements, chapter, sectionHeaderNumber=1) {
+  addHeaderNavLinksForChapter(cachedVerseListTabId, navigationPane, sectionTitleElements, chapter, sectionHeaderNumber=1) {
     var chapterSectionHeaderIndex = 0;
-    var cachedVerseListTabId = this.getCachedVerseListTabId(tabIndex);
 
     for (var i = 0; i &lt; sectionTitleElements.length; i++) {
       var sectionTitleElement = sectionTitleElements[i];
       var currentChapter = null;
-      var isSectionHeader = true;
-
-      try {
-        if (sectionTitleElement.getAttribute('subtype') == 'x-Chapter') {
-          isSectionHeader = false;
-        }
-      } catch (exc) {}
       
       try {
         currentChapter = parseInt(sectionTitleElement.getAttribute('chapter'));
       } catch (exc) {}
 
-      if (isSectionHeader &amp;&amp; currentChapter != null &amp;&amp; currentChapter == chapter) {
-        var sectionHeader = sectionTitleElement.innerText;
+      if (currentChapter != null &amp;&amp; currentChapter == chapter) {
+        var sectionHeader = sectionTitleElement.textContent;
         var chapter = sectionTitleElement.getAttribute('chapter');
-        var sectionHeaderId = this.getUnixSectionHeaderId(cachedVerseListTabId, sectionHeader);
+        var sectionHeaderId = this.getUnixSectionHeaderId(cachedVerseListTabId, chapter, sectionHeader);
 
         var currentHeaderLink = document.createElement('a');
         currentHeaderLink.setAttribute('class', 'navigation-link header-link');
@@ -427,7 +433,7 @@ class NavigationPane {
   }
 
   goToChapter(chapter) {
-    this.highlightNavElement(chapter, onClick=true);
+    this.highlightNavElement(chapter, true);
 
     var reference = '#top';
 
@@ -455,6 +461,45 @@ class NavigationPane {
     var cachedVerseListTabId = this.getCachedVerseListTabId();
     var reference = '#' + cachedVerseListTabId + ' ' + book;
     window.location = reference;
+  }
+
+  updateNavigationFromVerseBox(focussedElement, verseBox=undefined) {
+    if (verseBox == undefined) {
+      verseBox = focussedElement.closest('.verse-box');
+    }
+
+    var currentTab = app_controller.tab_controller.getTab();
+    var currentBook = currentTab.getBook();
+    var currentTagIdList = currentTab.getTagIdList();
+    var currentTextType = currentTab.getTextType();
+
+    if (currentTextType == 'book' &amp;&amp; currentBook != null) {
+
+      var verseReferenceContent = verseBox.querySelector('.verse-reference-content').innerText;
+      var currentChapter = app_controller.getChapterFromReference(verseReferenceContent);
+      this.highlightNavElement(currentChapter);
+
+      var sectionTitle = "";
+      if (focussedElement.classList.contains('sword-section-title')) {
+        sectionTitle = focussedElement.innerText;
+      } else {
+        sectionTitle = this.verse_box_helper.getSectionTitleFromVerseBox(verseBox);
+      }
+
+      if (sectionTitle != null) {
+        this.highlightSectionHeaderByTitle(sectionTitle);
+      }
+
+    } else if (currentTextType == 'tagged_verses' &amp;&amp; currentTagIdList != null || currentTextType == 'xrefs' || currentTextType == 'search_results') {
+
+      var bibleBookShortTitle = new VerseBox(verseBox).getBibleBookShortTitle();
+      var currentBookName = models.BibleBook.getBookTitleTranslation(bibleBookShortTitle);
+      
+      var bibleBookNumber = app_controller.getVerseListBookNumber(currentBookName);
+      if (bibleBookNumber != -1) {
+        this.highlightNavElement(bibleBookNumber, false, "OTHER");
+      }
+    }
   }
 }
 

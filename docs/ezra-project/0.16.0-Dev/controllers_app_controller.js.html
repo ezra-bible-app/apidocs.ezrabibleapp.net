@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -161,7 +161,7 @@ class AppController {
     this.init_component("VerseSelection", "verse_selection", "../components/verse_selection.js");
     this.init_component("TagSelectionMenu", "tag_selection_menu", "../components/tags/tag_selection_menu.js");
     this.init_component("TagAssignmentMenu", "tag_assignment_menu", "../components/tags/tag_assignment_menu.js");
-    this.init_component("ModuleSearch", "module_search", "../components/module_search.js");
+    this.init_component("ModuleSearchController", "module_search_controller", "./module_search_controller.js");
     this.init_component("TranslationController", "translation_controller", "./translation_controller.js");
     this.init_component("InstallModuleAssistant", "install_module_assistant", "../components/module_assistant/install_module_assistant.js");
     this.init_component("RemoveModuleAssistant", "remove_module_assistant", "../components/module_assistant/remove_module_assistant.js");
@@ -188,7 +188,7 @@ class AppController {
     });
 
     this.remove_module_assistant.init(() => { this.onAllTranslationsRemoved(); },
-                                   (translationId) => { this.onTranslationRemoved(translationId); });
+                                      async (translationId) => { await this.onTranslationRemoved(translationId); });
 
     this.tab_search.init('#tab-search',
                           '#tab-search-input',
@@ -201,6 +201,7 @@ class AppController {
                           () => { this.onSearchReset(); });
 
     var bibleTranslations = nsi.getAllLocalModules();
+
     var defaultBibleTranslationId = null;
     if (bibleTranslations.length > 0) {
       var defaultBibleTranslationId = bibleTranslations[0].name;
@@ -308,7 +309,7 @@ class AppController {
     this.tag_statistics.toggle_book_tags_statistics_button(ui.index);
 
     // Populate search menu based on last search (if any)
-    this.module_search.populateSearchMenu(ui.index);
+    this.module_search_controller.populateSearchMenu(ui.index);
 
     // Hide elements present from previous tab's usage
     this.dictionary_controller.hideStrongsBox();
@@ -327,7 +328,7 @@ class AppController {
     this.initCurrentVerseListMenu(tabIndex);
     this.tag_selection_menu.init(tabIndex);
     this.tag_assignment_menu.init(tabIndex);
-    this.module_search.initModuleSearchMenu(tabIndex);
+    this.module_search_controller.initModuleSearchMenu(tabIndex);
     this.translation_controller.initTranslationsMenu(previousTabIndex, tabIndex);
     this.translation_controller.initBibleTranslationInfoButton();
     var currentBibleTranslationId = this.tab_controller.getTab(tabIndex)?.getBibleTranslationId();
@@ -350,7 +351,7 @@ class AppController {
 
     if (currentTab.getTextType() == 'search_results') {
       this.text_controller.prepareForNewText(true, true);
-      this.module_search.startSearch(null, this.tab_controller.getSelectedTabIndex(), currentTab.getSearchTerm());
+      this.module_search_controller.startSearch(null, this.tab_controller.getSelectedTabIndex(), currentTab.getSearchTerm());
     } else {
       if (!this.tab_controller.isCurrentTabEmpty()) {
         this.text_controller.prepareForNewText(false, false);
@@ -380,10 +381,10 @@ class AppController {
     $('.book-select-value').text(i18n.t("menu.book"));
   }
 
-  onTranslationRemoved(translationId) {
+  async onTranslationRemoved(translationId) {
     $("select#bible-select").empty();
     this.translation_controller.initTranslationsMenu();
-    tags_controller.updateTagUiBasedOnTagAvailability();
+    await tags_controller.updateTagUiBasedOnTagAvailability();
     var installedTranslations = this.translation_controller.getInstalledModules();
     this.tab_controller.onTranslationRemoved(translationId, installedTranslations);
   }
@@ -426,7 +427,7 @@ class AppController {
     
     var bookSelectButton = currentVerseListMenu.find('.book-select-button');
     bookSelectButton.bind('click', (event) => {
-      this.book_selection_menu.handle_book_menu_click(event);
+      this.book_selection_menu.handleBookMenuClick(event);
     });
 
     currentVerseListMenu.find('.new-standard-tag-button').bind('click', function() {
@@ -607,10 +608,10 @@ class AppController {
   }
 
   hideAllMenus() {
-    this.book_selection_menu.hide_book_menu();
+    this.book_selection_menu.hideBookMenu();
     this.tag_selection_menu.hideTagMenu();
     this.tag_assignment_menu.hideTagAssignmentMenu();
-    this.module_search.hideSearchMenu();
+    this.module_search_controller.hideSearchMenu();
     this.optionsMenu.hideDisplayMenu();
   }
   
@@ -710,34 +711,9 @@ class AppController {
     return bibleBookNumber;
   }
 
-  async onVerseBoxMouseOver(event) {
-    var verseBox = event.target.closest('.verse-box');
-    var currentTab = this.tab_controller.getTab();
-    var currentBook = currentTab.getBook();
-    var currentTagIdList = currentTab.getTagIdList();
-    var currentTextType = currentTab.getTextType();
-
-    if (currentTextType == 'book' &amp;&amp; currentBook != null) {
-
-      var verseReferenceContent = verseBox.querySelector('.verse-reference-content').innerText;
-      var mouseOverChapter = this.getChapterFromReference(verseReferenceContent);
-      this.navigation_pane.highlightNavElement(mouseOverChapter);
-
-      var sectionTitle = this.verse_box_helper.getSectionTitleFromVerseBox(verseBox);
-      if (sectionTitle != null) {
-        this.navigation_pane.highlightSectionHeaderByTitle(sectionTitle);
-      }
-
-    } else if (currentTextType == 'tagged_verses' &amp;&amp; currentTagIdList != null || currentTextType == 'xrefs' || currentTextType == 'search_results') {
-
-      var bibleBookShortTitle = new VerseBox(verseBox).getBibleBookShortTitle();
-      var currentBookName = models.BibleBook.getBookTitleTranslation(bibleBookShortTitle);
-      
-      var bibleBookNumber = this.getVerseListBookNumber(currentBookName);
-      if (bibleBookNumber != -1) {
-        this.navigation_pane.highlightNavElement(bibleBookNumber, false, "OTHER");
-      }
-    }
+  onVerseBoxMouseOver(event) {
+    var focussedElement = event.target;
+    this.navigation_pane.updateNavigationFromVerseBox(focussedElement);
   }
 
   updateReferenceVerseTranslation(oldBibleTranslationId, newBibleTranslationId) {
@@ -845,7 +821,7 @@ class AppController {
     currentTab.setSearchTerm(null);
     currentTab.setXrefs(null);
     
-    this.module_search.resetSearch();
+    this.module_search_controller.resetSearch();
     
     if (tagIdList != "") {
       setTimeout(() => {
@@ -937,6 +913,7 @@ class AppController {
     }
 
     this.verse_selection.init(tabIndex);
+    this.optionsMenu.showOrHideHeaderNavigationBasedOnOption(tabIndex);
     this.navigation_pane.updateNavigation(tabIndex);
     this.notes_controller.initForTab(tabIndex);
     this.sword_notes.initForTab(tabIndex);
@@ -994,6 +971,13 @@ class AppController {
     /*if (highlight) { // FIXME
       original_verse_box.glow();
     }*/
+  }
+
+  isCacheInvalid() {
+    var lastUsedVersion = this.settings.get('lastUsedVersion');
+    var currentVersion = app.getVersion();
+
+    return currentVersion != lastUsedVersion;
   }
 }
 

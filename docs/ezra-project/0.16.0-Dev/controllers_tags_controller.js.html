@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -501,7 +501,10 @@ class TagsController {
       tags_controller.update_tag_count_after_rendering(currentBook != null);
       await tags_controller.update_tags_view_after_verse_selection(true);
       await tags_controller.updateTagUiBasedOnTagAvailability();
-      app_controller.tag_statistics.update_book_tag_statistics_box();
+
+      if (currentBook != null) {
+        app_controller.tag_statistics.update_book_tag_statistics_box();
+      }
 
     } else {
 
@@ -1304,8 +1307,8 @@ class TagsController {
       change: tags_controller.handle_tag_accordion_change
     });
 
-    var filter_button = $("&lt;img id=\"filter-button\" src=\"images/filter.png\"/>");
-    var filter_active_symbol = $("&lt;span id=\"filter-button-active\">*&lt;/span>");
+    var filter_button = $("&lt;img id=\"tag-list-filter-button\" src=\"images/filter.png\"/>");
+    var filter_active_symbol = $("&lt;span id=\"tag-list-filter-button-active\">*&lt;/span>");
     var tag_list_stats = $("&lt;span id='tag-list-stats' style='margin-left: 1em;'>&lt;/span>");
     var tags_search_input = $("&lt;input type='text' id='tags-search-input'>&lt;/input>");
     var reference_link = $($('#tags-content').find('a')[0]);
@@ -1317,12 +1320,10 @@ class TagsController {
     reference_link.append(tag_list_stats);
     reference_link.append(tags_search_input);
 
-    reference_link.find('#filter-button').bind('click', tags_controller.handle_filter_button_click);
+    reference_link.find('#tag-list-filter-button').bind('click', tags_controller.handle_filter_button_click);
 
-    $('#tags-content-global').bind('mouseover', function() {
-      $('#filter-dialog').css('display', 'none');
-    });
-    $('#filter-dialog').find('input').bind('click', tags_controller.handle_tag_filter_type_click);
+    $('#tags-content-global').bind('mouseover', () => { this.hideTagFilterMenuIfInToolBar(); });
+    $('#tag-filter-menu').find('input').bind('click', tags_controller.handle_tag_filter_type_click);
 
     $('#tags-search-input').bind('keyup', tags_controller.handle_tag_search_input);
     $('#tags-search-input').bind('keydown', function(e) {
@@ -1374,45 +1375,73 @@ class TagsController {
 
   handle_filter_button_click(e) {
     var position = $(this).offset();
-    var filter_dialog = $('#filter-dialog');
+    var filter_menu = $('#tag-filter-menu');
 
-    if (filter_dialog.is(':visible')) {
-      filter_dialog.css('display', 'none');
+    if (filter_menu.is(':visible')) {
+      filter_menu.css('display', 'none');
     } else {
-      filter_dialog.css('top', position.top + 20);
-      filter_dialog.css('left', position.left);
-      filter_dialog.show();
+      filter_menu.css('top', position.top + 20);
+      filter_menu.css('left', position.left);
+      filter_menu.show();
     }
   }
 
-  handle_tag_filter_type_click(e) {
+  async handle_tag_filter_type_click(e) {
+    await waitUntilIdle();
+    tags_controller.showTagSelectionFilterLoadingIndicator();
+    await sleep(500);
+
     var selected_type = $(this)[0].value;
     var tags_content_global = $('#tags-content-global');
     tags_content_global.find('.checkbox-tag').show();
-    $('#filter-button-active').hide();
+    $('#tag-list-filter-button-active').hide();
 
     switch (selected_type) {
       case "assigned":
         tags_content_global.find('.checkbox-tag[book-assignment-count="' + 0 + '"]').hide();
-        $('#filter-button-active').show();
+        $('#tag-list-filter-button-active').show();
         break;
 
       case "unassigned":
         tags_content_global.find('.checkbox-tag[book-assignment-count!="' + 0 + '"]').hide();
-        $('#filter-button-active').show();
+        $('#tag-list-filter-button-active').show();
         break;
       
       case "recently-used":
         tags_content_global.find('.checkbox-tag').filter(function() {
           return tags_controller.tag_store.filterRecentlyUsedTags(this);
         }).hide();
-        $('#filter-button-active').show();
+        $('#tag-list-filter-button-active').show();
         break;
 
       case "all":
       default:
         break;
     }
+
+    tags_controller.hideTagSelectionFilterLoadingIndicator();
+
+    setTimeout(() => {
+      tags_controller.hideTagFilterMenuIfInToolBar();
+    }, 500);
+  }
+
+  hideTagFilterMenuIfInToolBar() {
+    var tagFilterMenu = document.getElementById('tag-filter-menu');
+    if (tagFilterMenu.parentNode.getAttribute('id') == 'boxes') {
+      $('#tag-filter-menu').hide();
+    }
+  }
+
+  showTagSelectionFilterLoadingIndicator() {
+    var tagFilterMenu = document.getElementById('tag-filter-menu');
+    if (tagFilterMenu.parentNode.getAttribute('id') != 'boxes') {
+      $('#tag-selection-filter-loading-indicator').find('.loader').css('visibility', 'visible');
+    }
+  }
+
+  hideTagSelectionFilterLoadingIndicator() {
+    $('#tag-selection-filter-loading-indicator').find('.loader').css('visibility', 'hidden');
   }
 
   tag_title_matches_filter(tag_title, filter) {

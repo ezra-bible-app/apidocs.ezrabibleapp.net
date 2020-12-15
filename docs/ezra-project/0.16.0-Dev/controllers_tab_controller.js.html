@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -163,6 +163,7 @@ class TabController {
 
     window.addEventListener('beforeunload', () => {
       this.saveTabConfiguration();
+      this.saveBookSelectionMenu();
       this.saveLastUsedVersion();
     });
 
@@ -224,6 +225,13 @@ class TabController {
       //console.log('Saving tab configuration');
       this.settings.delete('tabConfiguration');
     }  
+  }
+
+  saveBookSelectionMenu() {
+    if (this.persistanceEnabled) {
+      var html = document.getElementById("book-selection-menu").innerHTML;
+      this.settings.set('bookSelectionMenuCache', html);
+    }
   }
 
   saveLastUsedVersion() {
@@ -307,16 +315,9 @@ class TabController {
     }
   }
 
-  isCacheInvalid() {
-    var lastUsedVersion = this.settings.get('lastUsedVersion');
-    var currentVersion = app.getVersion();
-
-    return currentVersion != lastUsedVersion;
-  }
-
   async populateFromMetaTabs() {
     var cacheOutdated = await this.isCacheOutdated();
-    var cacheInvalid = this.isCacheInvalid();
+    var cacheInvalid = app_controller.isCacheInvalid();
 
     if (cacheOutdated) {
       console.log("Tab content cache is outdated. Database has been updated in the meantime!");
@@ -339,14 +340,14 @@ class TabController {
 
       if (currentMetaTab.textType == 'search_results') {
 
-        await app_controller.module_search.populateSearchMenu(i);
+        await app_controller.module_search_controller.populateSearchMenu(i);
 
         var requestedBookId = -1; // all books requested
-        if (app_controller.module_search.searchResultsExceedPerformanceLimit(i)) {
+        if (app_controller.module_search_controller.searchResultsExceedPerformanceLimit(i)) {
           requestedBookId = 0; // no books requested - only list headers at first
         }
   
-        await app_controller.module_search.renderCurrentSearchResults(requestedBookId,
+        await app_controller.module_search_controller.renderCurrentSearchResults(requestedBookId,
                                                                                 i,
                                                                                 undefined,
                                                                                 currentMetaTab.cachedText);

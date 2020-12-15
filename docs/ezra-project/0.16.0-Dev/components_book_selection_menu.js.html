@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -137,24 +137,39 @@ class BookSelectionMenu {
   init() {
     if (this.init_completed) return;
 
-    this.localizeBookSelectionMenu();
+    var menu = $('#app-container').find('#book-selection-menu');
+    menu.bind('click', app_controller.handleBodyClick);
 
+    var cacheInvalid = app_controller.isCacheInvalid();
+
+    if (!cacheInvalid &amp;&amp; app_controller.settings.get('bookSelectionMenuCache') != null) {
+      var cachedHtml = app_controller.settings.get('bookSelectionMenuCache');
+      var menu = $('#app-container').find('#book-selection-menu');
+
+      menu.innerHTML = cachedHtml;
+
+    } else {
+      console.log("Localizing book selection menu ...")
+      this.localizeBookSelectionMenu();
+    }
+
+    this.initLinks();
+    this.init_completed = true;
+  }
+
+  initLinks() {
     var menu = $('#app-container').find('#book-selection-menu');
     var links = menu.find('a');
-
-    menu.bind('click', app_controller.handleBodyClick);
 
     for (var i = 0; i &lt; links.length; i++) {
       var current_link = $(links[i]);
       var current_link_href = current_link.attr('href');
       var current_book_title = current_link.html();
-      var new_link_href = "javascript:app_controller.book_selection_menu.select_bible_book('" + 
+      var new_link_href = "javascript:app_controller.book_selection_menu.selectBibleBook('" + 
                           current_link_href + "','" + current_book_title + "')";
 
       current_link.attr('href', new_link_href);
     }
-
-    this.init_completed = true;
   }
 
   // This function is rather slow and it delays app startup! (~175ms)
@@ -181,6 +196,7 @@ class BookSelectionMenu {
           var current_book_link = book_links[i];
           var current_link_book = current_book_link.getAttribute('class').split(' ')[0];
           var current_book_id = current_link_book.split('-')[1];
+          
           if (books.includes(current_book_id)) {
             current_book_link.classList.remove('book-unavailable');
             current_book_link.classList.add('book-available');
@@ -193,10 +209,13 @@ class BookSelectionMenu {
     }
   }
 
-  select_bible_book(book_code, book_title) {
+  selectBibleBook(book_code, book_title) {
     var currentBibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+    if (currentBibleTranslationId == null || currentBibleTranslationId == undefined) {
+      return;
+    }
 
-    Sentry.addBreadcrumb({category: "BookSelectionMenu.select_bible_book",
+    Sentry.addBreadcrumb({category: "app",
                           message: `Selected book ${book_code} using translation ${currentBibleTranslationId}`,
                           level: Sentry.Severity.Info});
     
@@ -205,7 +224,7 @@ class BookSelectionMenu {
       return;
     }
 
-    app_controller.book_selection_menu.hide_book_menu();
+    app_controller.book_selection_menu.hideBookMenu();
     app_controller.book_selection_menu.highlightSelectedBookInMenu(book_code);
 
     var currentTab = app_controller.tab_controller.getTab();
@@ -214,8 +233,8 @@ class BookSelectionMenu {
 
     app_controller.tag_selection_menu.hideTagMenu();
     app_controller.tag_selection_menu.resetTagMenu();
-    app_controller.module_search.hideSearchMenu();
-    app_controller.module_search.resetSearch();
+    app_controller.module_search_controller.hideSearchMenu();
+    app_controller.module_search_controller.resetSearch();
     app_controller.tag_assignment_menu.hideTagAssignmentMenu();
 
     app_controller.text_controller.prepareForNewText(true, false);
@@ -247,7 +266,7 @@ class BookSelectionMenu {
     }, 50);
   }
 
-  hide_book_menu() {
+  hideBookMenu() {
     if (this.book_menu_is_opened) {
       $('#app-container').find('#book-selection-menu').hide();
       this.book_menu_is_opened = false;
@@ -257,7 +276,7 @@ class BookSelectionMenu {
     }
   }
 
-  handle_book_menu_click(event) {
+  handleBookMenuClick(event) {
     if ($('.book-select-button').hasClass('ui-state-disabled')) {
       return;
     }
@@ -266,7 +285,7 @@ class BookSelectionMenu {
       app_controller.handleBodyClick();
     } else {
       app_controller.tag_selection_menu.hideTagMenu();
-      app_controller.module_search.hideSearchMenu();
+      app_controller.module_search_controller.hideSearchMenu();
       app_controller.optionsMenu.hideDisplayMenu();
       app_controller.tag_assignment_menu.hideTagAssignmentMenu();
       

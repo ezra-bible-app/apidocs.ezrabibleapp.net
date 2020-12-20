@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Project Design Docs controllers/notes_controller.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Project Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/ezra-project/ezra-project"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezra-project.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>controllers/notes_controller.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Project.
+
+   Copyright (C) 2019 - 2020 Tobias Klein &lt;contact@ezra-project.net>
+
+   Ezra Project is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Project is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Project. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+let CodeMirror = null;
+
+const VerseBoxHelper = require('../helpers/verse_box_helper.js');
+const VerseBox = require('../ui_models/verse_box.js');
+
+/**
+ * The NotesController handles all user actions related to note taking.
+ * 
+ * Like all other controllers it is only initialized once. It is accessible at the
+ * global object `app_controller.notes_controller`.
+ * 
+ * @category Controller
+ */
+class NotesController {
+  constructor() {
+    CodeMirror = require('codemirror/lib/codemirror.js');
+    require("codemirror/addon/edit/continuelist.js");
+    require("codemirror/mode/markdown/markdown.js");
+    require("codemirror/addon/mode/overlay.js");
+    require("codemirror/mode/markdown/markdown.js");
+    require("codemirror/mode/gfm/gfm.js");
+    require("codemirror/mode/htmlmixed/htmlmixed.js");
+
+    this.verseBoxHelper = new VerseBoxHelper();
+    this.theme = this.getCurrentTheme();
+    this.reset();
+  }
+
+  reset() {
+    this.currentVerseReferenceId = null;
+    this.currentlyEditedNotes = null;
+    this.currentEditor = null;
+  }
+
+  initForTab(tabIndex=undefined) {
+    this.reset();
+    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
+    if (currentVerseListFrame == null || currentVerseListFrame.length == 0) {
+      return;
+    }
+
+    var notes = currentVerseListFrame[0].querySelectorAll('.verse-notes');
+    for (var i = 0; i &lt; notes.length; i++) {
+      notes[i].addEventListener('mousedown', (event) => {
+        this.handleNotesClick(event);
+      });
+    }
+  }
+
+  getCurrentVerseBox() {
+    var currentVerseListFrame = app_controller.getCurrentVerseListFrame();
+    return currentVerseListFrame[0].querySelector('.verse-reference-id-' + this.currentVerseReferenceId);
+  }
+
+  refreshNotesInfo(noteValue) {
+    var currentVerseBox = this.getCurrentVerseBox();
+    var notesInfo = currentVerseBox.querySelector('.notes-info');
+
+    if (notesInfo != null) {
+      if (noteValue != '') {
+        notesInfo.classList.add('visible');
+      } else {
+        notesInfo.classList.remove('visible');
+      }
+    }
+  }
+
+  saveEditorContent() {
+    if (this.currentlyEditedNotes != null) {
+      var currentNoteValue = this.currentEditor.getValue();
+      var previousNoteValue = this.currentlyEditedNotes.getAttribute('notes-content');
+
+      if (currentNoteValue != previousNoteValue) {
+        currentNoteValue = currentNoteValue.trim();
+        
+        var currentVerseBox = this.getCurrentVerseBox();
+        this.currentlyEditedNotes.setAttribute('notes-content', currentNoteValue);
+        this.refreshNotesInfo(currentNoteValue);
+
+        models.Note.persistNote(currentNoteValue, currentVerseBox).then((note) => {
+          if (note != undefined) {
+            var updatedTimestamp = null;
+
+            if (currentNoteValue == "") {
+              updatedTimestamp = "";
+            } else {
+              updatedTimestamp = note?.updatedAt;
+            }
+
+            this.updateNoteDate(currentVerseBox, updatedTimestamp);
+
+            this.verseBoxHelper.iterateAndChangeAllDuplicateVerseBoxes(
+              currentVerseBox, { noteValue: currentNoteValue, timestamp: updatedTimestamp }, (context, targetVerseBox) => {
+
+              var currentNotes = null;
+
+              if (targetVerseBox.classList.contains('book-notes')) {
+                currentNotes = targetVerseBox;
+              } else {
+                currentNotes = targetVerseBox.querySelector('.verse-notes');
+              }
+
+              currentNotes.setAttribute('notes-content', context.noteValue);
+              this.updateNoteDate(targetVerseBox, context.timestamp);
+            });
+          }
+        });
+      }
+    }
+  }
+
+  updateNoteDate(verseBox, dbTimestamp) {
+    var localizedTimestamp = "";
+
+    if (dbTimestamp != "") {
+      localizedTimestamp = i18nHelper.getLocalizedDate(dbTimestamp);
+    }
+    
+    verseBox.querySelector('.verse-notes-timestamp').innerText = localizedTimestamp;
+  }
+
+  getRenderedEditorContent(original=false) {
+    const marked = require("marked");
+
+    var content = null;
+
+    if (original) {
+      content = this.getNotesElementContent(this.currentlyEditedNotes);
+    } else {
+      content = this.currentEditor.getValue();
+    }
+
+    var renderedContent = "";
+
+    if (content != "") {
+      renderedContent = marked(content);
+    }
+
+    return renderedContent;
+  }
+
+  restoreCurrentlyEditedNotes(persist=true) {
+    if (persist) {
+      this.saveEditorContent();
+    }
+
+    if (this.currentlyEditedNotes != null) {
+      var renderedContent = this.getRenderedEditorContent(!persist);
+      this.updateRenderedContent(this.currentlyEditedNotes, renderedContent);
+      var currentVerseBox = this.getCurrentVerseBox();
+
+      this.verseBoxHelper.iterateAndChangeAllDuplicateVerseBoxes(
+        currentVerseBox, renderedContent, (context, targetVerseBox) => {
+
+        var targetNotes = null;
+
+        if (targetVerseBox.classList.contains('book-notes')) {
+          targetNotes = targetVerseBox;
+        } else {
+          targetNotes = targetVerseBox.querySelector('.verse-notes');
+        }
+
+        this.updateRenderedContent(targetNotes, context);
+      });
+
+      this.resetVerseNoteButtons();
+    }
+
+    this.reset();
+  }
+
+  updateRenderedContent(notesElement, renderedContent) {
+    notesElement.style.removeProperty('height');
+    var verseNotesText = notesElement.querySelector('.verse-notes-text');
+    verseNotesText.classList.remove('edited');
+    verseNotesText.innerHTML = renderedContent;
+
+    if (renderedContent == '') {
+      notesElement.classList.add('verse-notes-empty');
+    } else {
+      notesElement.classList.remove('verse-notes-empty');
+    }
+  }
+
+  resetVerseNoteButtons() {
+    var verseNotesButtons = $(this.currentlyEditedNotes).find('.verse-notes-buttons');
+    verseNotesButtons.find('a').unbind();
+    verseNotesButtons.hide();
+  }
+
+  handleNotesClick(event) {
+    if (event.target.nodeName == 'A') {
+      // If the user is clicking a link within the note ('a' element)
+      // we simply return and let Electron handle the default action
+      // (Link will be opened in the default browser)
+      return;
+    }
+
+    event.stopPropagation();
+
+    var verseReferenceId = null;
+    var verseNotesBox = $(event.target).closest('.verse-notes');
+
+    // If the notes are not empty we need to ensure that the user actually clicked on the notes content
+    if (!verseNotesBox.hasClass('verse-notes-empty')) {
+      if (event.target.classList.contains('verse-notes-text') || event.target.classList.contains('verse-notes')) {
+        // The click happened outside of the notes content (scrollbar or area right of scrollbar).
+        // In this case we return immediately and do not process the click.
+        return;
+      }
+    }
+
+    if (verseNotesBox.hasClass('book-notes')) {
+      verseReferenceId = $(event.target).closest('.verse-notes')[0].getAttribute('verse-reference-id');
+    } else {
+      var verseBox = $(event.target).closest('.verse-box')[0];
+      verseReferenceId = new VerseBox(verseBox).getVerseReferenceId();
+    }
+
+    if (verseReferenceId != this.currentVerseReferenceId) {
+      this.restoreCurrentlyEditedNotes();
+      this.currentVerseReferenceId = verseReferenceId;
+      this.currentlyEditedNotes = $(event.target).closest('.verse-notes')[0];
+      this.currentlyEditedNotes.classList.remove('verse-notes-empty');
+      this.createEditor(this.currentlyEditedNotes);
+      this.setupVerseNoteButtons();
+    }
+  }
+
+  setupVerseNoteButtons() {
+    var verseNotesButtons = $(this.currentlyEditedNotes).find('.verse-notes-buttons');
+
+    verseNotesButtons.find('a').bind('click', (event) => {
+      event.preventDefault();
+
+      if (event.target.className == 'save-note') {
+
+        this.restoreCurrentlyEditedNotes();
+
+      } else if (event.target.className == 'cancel-edit') {
+
+        this.restoreCurrentlyEditedNotes(false);
+
+      }
+    });
+
+    verseNotesButtons.show();
+  }
+
+  getNotesElementContent(notesElement) {
+    var notesContent = "";
+    if (notesElement.hasAttribute('notes-content')) {
+      notesContent = notesElement.getAttribute('notes-content')
+    }
+    
+    return notesContent;
+  }
+
+  htmlToElement(html) {
+    var template = document.createElement('template');
+    html = html.trim(); // Never return a text node of whitespace as the result
+    template.innerHTML = html;
+    return template.content.firstChild;
+  }
+
+  createEditor(notesElement) {
+    var notesElementText = notesElement.querySelector('.verse-notes-text');
+    notesElementText.classList.add('edited');
+    notesElementText.innerHTML = '';
+
+    var textArea = this.htmlToElement('&lt;textarea class="editor">&lt;/textarea>');
+    notesElementText.append(textArea);
+
+    var targetElement = notesElementText.querySelector('.editor');
+    targetElement.value = this.getNotesElementContent(notesElement);
+
+    var editor = CodeMirror.fromTextArea(targetElement, {
+      mode: 'gfm',
+      autoCloseBrackets: true,
+      lineNumbers: false,
+      lineWrapping: true,
+      viewportMargin: Infinity,
+      autofocus: true,
+      extraKeys: {"Enter": "newlineAndIndentContinueMarkdownList"},
+      theme: this.theme
+    });
+
+    this.currentEditor = editor;
+    this.focusEditor();
+  }
+
+  focusEditor() {    
+    setTimeout(() => {
+      if (this.currentEditor != null) {
+        this.currentEditor.refresh();
+        this.currentEditor.getInputField().focus();
+      }
+    }, 200);
+  }
+
+  getCurrentTheme() {
+    var theme = 'default';
+    if (app_controller.optionsMenu._nightModeOption?.isChecked()) {
+      theme = 'mbo';
+    }
+
+    return theme;
+  }
+
+  setLightTheme() {
+    this.theme = 'default';
+    this.refreshTheme();
+  }
+
+  setDarkTheme() {
+    this.theme = 'mbo';
+    this.refreshTheme();
+  }
+
+  refreshTheme() {
+    if (this.currentEditor != null) {
+      this.currentEditor.setOption("theme", this.theme);
+      this.focusEditor();
+    }
+  }
+}
+
+module.exports = NotesController;</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -139,7 +139,7 @@ class TextController {
   }
 
   prepareForNewText(resetView, isSearch=false, tabIndex=undefined) {
-    app_controller.module_search.hideModuleSearchHeader(tabIndex);
+    app_controller.module_search_controller.hideModuleSearchHeader(tabIndex);
     app_controller.navigation_pane.initNavigationPaneForCurrentView(tabIndex);
 
     if (tabIndex === undefined) {
@@ -423,7 +423,7 @@ class TextController {
     var versification = (app_controller.translation_controller.getVersification(bibleTranslationId) == 'ENGLISH' ? 'eng' : 'heb');
 
     var bibleBooks = await models.BibleBook.findBySearchResults(search_results);
-    var bibleBookStats = app_controller.module_search.getBibleBookStatsFromSearchResults(search_results);
+    var bibleBookStats = app_controller.module_search_controller.getBibleBookStatsFromSearchResults(search_results);
     var verses = [];
 
     for (var i = 0; i &lt; search_results.length; i++) {
@@ -624,13 +624,13 @@ class TextController {
 
     if (listType == 'book') {
       app_controller.tag_selection_menu.resetTagMenu();
-      app_controller.module_search.resetSearch(tabIndex);
+      app_controller.module_search_controller.resetSearch(tabIndex);
 
       target.addClass('verse-list-book');
 
     } else if (listType == 'tagged_verses') {
 
-      app_controller.module_search.resetSearch(tabIndex);
+      app_controller.module_search_controller.resetSearch(tabIndex);
       app_controller.taggedVerseExport.enableTaggedVersesExportButton(tabIndex);
 
       target.removeClass('verse-list-book');
@@ -663,7 +663,7 @@ class TextController {
     if (listType == 'search_results') {
       var currentTab = app_controller.tab_controller.getTab(tabIndex);
       var currentSearchTerm = currentTab?.getSearchTerm();
-      app_controller.module_search.highlightSearchResults(currentSearchTerm, tabIndex);
+      app_controller.module_search_controller.highlightSearchResults(currentSearchTerm, tabIndex);
     }
 
     if (isCache || listType == 'book' &amp;&amp; !append) {

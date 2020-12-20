@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="ModuleSearch.html">ModuleSearch</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -123,7 +123,7 @@
    along with Ezra Project. See the file LICENSE.
    If not, see &lt;http://www.gnu.org/licenses/>. */
 
-const jsStrongs = require('strongs');
+let jsStrongs = null;
 
 /**
  * The DictionaryInfoBox component handles all event handling and updates of the
@@ -150,6 +150,14 @@ class DictionaryInfoBox {
     $('#dictionary-info-box').accordion();
   }
 
+  getJsStrongs() {
+    if (jsStrongs == null) {
+      jsStrongs = require('strongs');
+    }
+
+    return jsStrongs;
+  }
+
   clearDictInfoBox() {
     this.dictionaryInfoBoxPanel.find('div').empty();
     this.dictionaryInfoBoxHeader.html(i18n.t("dictionary-info-box.default-header", { interpolation: {escapeValue: false} }));
@@ -167,6 +175,8 @@ class DictionaryInfoBox {
   }
 
   showDictInfoBox() {
+    this.getJsStrongs();
+
     if (this.infoBox.is(":hidden")) {
       this.infoBox.show();
       return true;
@@ -182,7 +192,7 @@ class DictionaryInfoBox {
 
     this.currentStrongsEntry = strongsEntry;
     this.currentAdditionalStrongsEntries = additionalStrongsEntries;
-    this.currentLemma = jsStrongs[strongsEntry.key].lemma;
+    this.currentLemma = this.getJsStrongs()[strongsEntry.key].lemma;
 
     var dictInfoHeader = this.getDictInfoHeader(strongsEntry);
     this.dictionaryInfoBoxHeader.html(dictInfoHeader);
@@ -287,7 +297,7 @@ class DictionaryInfoBox {
       }
 
       this.currentStrongsEntry = this.dictionaryController.getStrongsEntryWithRawKey(key);
-      this.currentLemma = jsStrongs[this.currentStrongsEntry.key].lemma;
+      this.currentLemma = this.getJsStrongs()[this.currentStrongsEntry.key].lemma;
     }
 
     this.updateDictInfoBox(this.currentStrongsEntry, this.currentAdditionalStrongsEntries);
@@ -353,7 +363,7 @@ class DictionaryInfoBox {
     var referenceTableRow = "";
     var referenceKey = strongsReference.key;
     var referenceStrongsEntry = nsi.getStrongsEntry(referenceKey);
-    var referenceStrongsLemma = jsStrongs[referenceKey].lemma;
+    var referenceStrongsLemma = this.getJsStrongs()[referenceKey].lemma;
 
     var referenceLink = "&lt;a href=\"javascript:app_controller.dictionary_controller.dictionaryInfoBox.openStrongsReference('";
     referenceLink += referenceKey;
@@ -463,13 +473,13 @@ class DictionaryInfoBox {
 
     // Set the search key and populate the search menu
     app_controller.tab_controller.setTabSearch(strongsKey);
-    app_controller.module_search.populateSearchMenu();
+    app_controller.module_search_controller.populateSearchMenu();
 
     // Prepare for the next text to be loaded
     app_controller.text_controller.prepareForNewText(true, true);
 
     // Perform the Strong's search
-    await app_controller.module_search.startSearch(/* event */      null,
+    await app_controller.module_search_controller.startSearch(/* event */      null,
                                                              /* tabIndex */   undefined,
                                                              /* searchTerm */ strongsKey);
 

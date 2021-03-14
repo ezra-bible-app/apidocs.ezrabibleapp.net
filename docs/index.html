@@ -1,11 +1,226 @@
-<?xml version="1.0" encoding="UTF8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta http-equiv="refresh" content="0; URL=https://apidocs.ezra-project.net/ezra-project/0.16.0-Dev/index.html">
-<title>Ezra Project Design Documentation</title>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Bible App Design Docs Home</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
 </head>
-<body>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Bible App Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/ezra-project/ezra-project"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezra-project.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p></p>
+                    <h1>Home</h1>
+                </header>
+                
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><p>Welcome to the Design documentation of Ezra Bible App!</p>
+<p><a href='#file-structure'>File structure</a> | <a href='#db-schema'>Database schema</a></p>
+<h2>Architecture overview</h2>
+<p>Ezra Bible App mostly uses plain, vanilla JavaScript in combination with some additional technology like jQuery, jQuery UI, Sequelize and the Pug template engine (see <a href="https://github.com/ezra-project/ezra-project/blob/master/TECH.md">here</a> for a complete list of technologies). For performance reasons, it does not use a web framework like React or Angular. Nevertheless, the architecture is designed in a modular way and should make it easy for new developers.</p>
+<h3>Backend vs. Frontend</h3>
+<p>The high-level architecture of Ezra Bible App is separated into two parts - backend and frontend. The backend contains all functionality that deals with persistence:</p>
+<ul>
+<li>Interaction with node-sword-interface (SWORD)</li>
+<li>Database access (SQLite)</li>
+<li>Application settings</li>
+</ul>
+<p>Backend and frontend each run in separate processes:</p>
+<ul>
+<li>On Electron the backend is contained in the Electron main process, while the frontend is running in the Electron renderer process (BrowserWindow).</li>
+<li>On Cordova the backend is contained in the nodejs process (via <a href="https://code.janeasystems.com/nodejs-mobile">nodejs-mobile</a>), while the frontend is simply the Android Webview.</li>
+</ul>
+<p>Communication between the processes happens via IPC. The code that encapsulates this communication can be found in <code>app/backend/ipc</code> and <code>app/frontend/ipc</code>.</p>
+<h3>Controllers</h3>
+<p>Controllers are classes that manage one or several (graphical) components and usually also interact with the Ezra Bible App backend (which gives access to the database, settings, etc.), e.g. the <code>TagsController</code> and <code>NotesController</code>.</p>
+<p>The most notable Controller is the <code>AppController</code>, which is responsible for initializing all other controllers and components.</p>
+<h3>Components</h3>
+<p>Components are classes that usually represent one specific &quot;graphical component&quot; of the UI, e.g. the options menu or the book selection menu.</p>
+<h3>Sequelize Models</h3>
+<p>Sequelize (an object-oriented wrapper) is used to manage the interface to the (SQLite) database. Each database table is represented by one model. Besides the standard Sequelize API that is attached to every model, you find various custom querying functions in the models.</p>
+<h3>node-sword-interface</h3>
+<p>To access SWORD modules, Ezra Bible App uses the <a href="https://github.com/ezra-project/node-sword-interface">node-sword-interface</a> library. This library is implemented in C++ and offers a simple, flat, facade style interface that wraps calls to the SWORD library.</p>
+<h3>The big picture</h3>
+<div class="mermaid">
+erDiagram
+    frontend                  }|--|{    backend                   : communicate-via-IPC
+    frontend                  }|--|{    ezra_init                 : contains
+    ezra_init                 }|--||    HTML-Component            : loads
+    ezra_init                 }|--||    Component-or-Controller   : initializes
+    HTML-Component            }|--||    DOM                       : is-part-of
+    Component-or-Controller   }|--|{    HTML-Component            : modifies
+    Component-or-Controller   }|--|{    JS-Event                  : handles
+    backend                   }|--|{    IpcNsiHandler             : contains
+    backend                   }|--|{    IpcSettingsHandler        : contains
+    backend                   }|--|{    IpcDbHandler              : contains
+    IpcNsiHandler             ||--|{    node-sword-interface      : uses
+    node-sword-interface      ||--||    SWORD-Engine              : wraps
+    IpcSettingsHandler        }|--||    conf                      : uses
+    conf                      ||--||    Settings-JSON-File        : manages
+    IpcDbHandler              }|--|{    Sequelize-Model           : uses
+    Sequelize-Model           ||--||    SQLite-DB-Table           : maps
+</div>
+<p><a name='file-structure'></a></p>
+<h2>File structure</h2>
+<p>On the top-level these are the most relevant files and directories.</p>
+<h3>main.js</h3>
+<p>Standard node.js / Electron start script. This is not changed very often.</p>
+<h3>index.html</h3>
+<p>Basic html template loaded initially on startup. Additional content is dynamically added to the DOM by <code>ezra_init.js</code>.</p>
+<h3>app/frontend/ezra_init.js</h3>
+<p>This is the entry script for initializing the user interface. This file is referenced in the <code>index.html</code> file. The code in <code>ezra_init.js</code> is only used for startup.</p>
+<h3>app</h3>
+<p>This directory contains the JavaScript source code of Ezra Bible App. It contains the following parts:</p>
+<ul>
+<li><code>frontend/components</code>: Graphical components of the UI, e.g. <code>BookSelectionMenu</code>, <code>NavigationPane</code>, <code>OptionsMenu</code>, etc.</li>
+<li><code>frontend/controllers</code>: Controllers are classes that &quot;bring live&quot; into the UI and respond to user actions. All Controllers are named <code>&lt;Name&gt;Controller</code> and the file name is <code>&lt;name&gt;_controller.js</code>.</li>
+<li><code>frontend/helpers</code>: Helper classes that make various tasks more easy, but usually don't interact with the UI directly.</li>
+<li><code>frontend/ipc</code>: IPC interface classes that allow interaction with the backend IPC Handlers.</li>
+<li><code>frontend/platform</code>: Platform-specific classes. (Currently only used for Cordova)</li>
+<li><code>frontend/ui_models</code>: Model classes for objects in the user interface. May be instantiated multiple times if there are multiple instances of a certain object in the UI.</li>
+<li><code>backend/database</code>: Database related source code (models, migrations).</li>
+<li><code>backend/ipc</code>: IPC handlers that give the frontend access to backend functionality.</li>
+<li><code>templates</code>: <a href="https://pugjs.org/">pug</a> templates</li>
+</ul>
+<h3>css</h3>
+<p>Here you find CSS stylesheets.</p>
+<h3>html</h3>
+<p>This directory contains static HTML files (e.g. for the book selection menu, the display options menu, etc.). These files are loaded dynamically into the DOM by <code>ezra_init.js</code>.</p>
+<h3>locales</h3>
+<p>Here you find <a href="https://www.i18next.com/">i18next</a> locale files (JSON format).</p>
+<p>Note that for adding a new locale you must also add an entry in the whitelist in <code>app/helpers/i18n_helper.js</code> (line 42).</p>
+<p><a name='db-schema'></a></p>
+<h2>Database schema</h2>
+<div class="mermaid">
+erDiagram
+    BibleBook                 ||--|{    VerseReference      : has
+    Note                      o|--||    VerseReference      : has
+    VerseReference            ||--|{    VerseTag            : has
+    Tag                       ||--|{    VerseTag            : has
+</div>
+<script src="https://unpkg.com/mermaid@8.8.3/dist/mermaid.min.js"></script></article>
+    </section>
+
+
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
 </body>
 </html>

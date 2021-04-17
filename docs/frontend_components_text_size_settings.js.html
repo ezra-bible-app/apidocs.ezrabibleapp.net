@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs frontend/components/verse_statistics_chart.js</title>
+  <title>Ezra Bible App Design Docs frontend/components/text_size_settings.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -96,7 +96,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>frontend/components/verse_statistics_chart.js</h1>
+                    <h1>frontend/components/text_size_settings.js</h1>
                 </header>
                 
 
@@ -123,145 +123,199 @@
    along with Ezra Bible App. See the file LICENSE.
    If not, see &lt;http://www.gnu.org/licenses/>. */
 
+const Mousetrap = require('mousetrap');
+
+const DEFAULT_TEXT_SIZE = 10; // in em*10 so not to deal with float
+const MIN_SIZE = 7;
+const MAX_SIZE = 20;
+const INCREASE_SHORTCUT = ['mod+=', 'mod+shift+=']; // Ctrl/Cmd + 
+const DECREASE_SHORTCUT = ['mod+-', 'mod+shift+-'];  // Ctrl/Cmd -
+const RESET_SHORTCUT = 'mod+0';  // Ctrl/Cmd 0
+const SETTINGS_KEY = 'verse-text-size';
 
 /**
- * The VerseStatisticsChart component renders a chart with verse count statistics per bible book. This is used by the ModuleSearch component.
+ * The TextSizeSettings component implements the buttons two control text (font size) of the verse and
+ * other elements. Size update is done by updating (adding new and deleting old) css rule
  * 
  * @category Component
  */
-class VerseStatisticsChart {
+class TextSizeSettings {
   constructor() {
-    this.chartColors = {
-      red: 'rgb(255, 99, 132)',
-      orange: 'rgb(255, 159, 64)',
-      yellow: 'rgb(255, 205, 86)',
-      green: 'rgb(75, 192, 192)',
-      blue: 'rgb(54, 162, 235)',
-      purple: 'rgb(153, 102, 255)',
-      grey: 'rgb(201, 203, 207)'
-    };
+    this._textSizeValue = this.DEFAULT_TEXT_SIZE;
+    this._shouldTagsNotesResize = true;
+    this.openMenuButton = '.text-size-settings-button';
+    this.menuContainer = '.text-size-menu';
+    this.menuIsOpened = false;
+    this.stylesheet = null;  // instance of CSSStyleSheet https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet
   }
 
-  getVerseStatisticsChart(tabIndex=undefined) {
-    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
-    return currentVerseListFrame.find('.verse-statistics-chart');
-  }
-
-  resetChart(tabIndex=undefined) {
-    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
-    var container = currentVerseListFrame.find('.verse-statistics-chart-container');
-
-    container.hide();
-    container.empty();
-
-    var canvasElement = "&lt;canvas class='verse-statistics-chart'>&lt;/canvas>";
-    container.append(canvasElement);
-  }
-
-  async repaintChart(tabIndex=undefined) {
-    var currentTab = app_controller.tab_controller.getTab(tabIndex);
-    if (!currentTab.isVerseList()) {
-      return;
-    }
-
-    var currentTextType = currentTab.getTextType();
-    var bibleBookStats = null;
-
-    if (currentTextType == 'search_results') {
-      var currentTab = app_controller.tab_controller.getTab(tabIndex);
-      var currentSearchResults = currentTab.getSearchResults();
-      bibleBookStats = app_controller.module_search_controller.getBibleBookStatsFromSearchResults(currentSearchResults);
-    } else {
-      bibleBookStats = app_controller.getBibleBookStatsFromVerseList(tabIndex);
-    }
-
-    var numberOfBibleBookStatsEntries = Object.keys(bibleBookStats).length;
-
-    if (numberOfBibleBookStatsEntries > 0) {
-      this.resetChart(tabIndex);
-      await this.updateChart(tabIndex, bibleBookStats);
-    }
-  }
-
-  async repaintAllCharts() {
-    var tabCount = app_controller.tab_controller.getTabCount();
-
-    for (var i = 0; i &lt; tabCount; i++) {
-      var currentTab = app_controller.tab_controller.getTab(i);
-
-      if (currentTab.isVerseList()) {
-        await this.repaintChart(i);
-      }
-    }
-  }
-
-  async updateChart(tabIndex=undefined, bibleBookStats) {
-    require('chart.js/dist/Chart.bundle.min.js');
-
-    var numberOfBooks = Object.keys(bibleBookStats).length;
-    if (numberOfBooks &lt; 2) {
-      return;
-    }
-    
-    var currentTranslation = app_controller.tab_controller.getTab(tabIndex).getBibleTranslationId();
-    var bookList = await ipcNsi.getBookList(currentTranslation);
-
-    const [labels, values] = await ipcGeneral.getSearchStatisticChartData(currentTranslation, bookList, bibleBookStats);
-
-    var data = {
-      labels: labels,
-      datasets: [{
-        data: values,
-        backgroundColor: this.chartColors.blue,
-        borderWidth: 1
-      }]
-    };
-
-    var chartElement = this.getVerseStatisticsChart(tabIndex);
-    var useNightMode = app_controller.optionsMenu._nightModeOption.isChecked();
-    var labelFontColor = useNightMode ? "white" : "black";
-    
-    new Chart(chartElement, {
-      type: 'bar',
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        scaleShowValues: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              autoSkip: false,
-              fontSize: 10,
-              fontColor: labelFontColor,
-            },
-            // grid line settings
-            gridLines: {
-              drawOnChartArea: false, // only want the grid lines for one axis to show up
-            },
-          }],
-          yAxes: [{
-            gridLines: {
-              color: this.chartColors.grey,
-              zeroLineColor: this.chartColors.grey
-            },
-            ticks: {
-              fontColor: labelFontColor,
-              precision: 0
-            }
-          }]
-        }
+  async init(tabIndex = undefined) {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+    currentVerseListMenu.find(this.openMenuButton).bind('click', (e) => {
+      e.stopPropagation()
+      if (this.menuIsOpened) {
+        this.hideTextSizeMenu();
+      } else {
+        this.showTextSizeMenu();
       }
     });
 
-    $(chartElement).parent().show();
+    currentVerseListMenu.find('.text-size-reset').bind('click', async (event) => {
+      this.performSizeChange(event, () => { this.resetSize(); });
+    });
+
+    currentVerseListMenu.find('.text-size-decrease').bind('click', async (event) => {
+      this.performSizeChange(event, () => { this.decreaseSize(); });
+    });
+
+    currentVerseListMenu.find('.text-size-increase').bind('click', async (event) => {
+      this.performSizeChange(event, () => { this.increaseSize(); });
+    });
+
+    if (this.stylesheet === null) {
+      var styleEl = $('&lt;style id="dynamic-text-size" />')
+      $("head").append(styleEl);
+      this.stylesheet = styleEl[0].sheet;
+
+      Mousetrap.bind(INCREASE_SHORTCUT, () => {
+        this.increaseSize();
+        return false;
+      });
+
+      Mousetrap.bind(DECREASE_SHORTCUT, () => {
+        this.decreaseSize();
+        return false;
+      });
+
+      Mousetrap.bind(RESET_SHORTCUT, () => {
+        this.resetSize();
+        return false;
+      });
+
+      if (window.ipcSettings) {
+        this._textSizeValue = await window.ipcSettings.get(SETTINGS_KEY, DEFAULT_TEXT_SIZE);
+        this._shouldTagsNotesResize = await window.ipcSettings.get('adjustTagsNotesTextSize', this._shouldTagsNotesResize);
+      }
+
+      this.updateStyle();
+    }
+  }
+
+  async performSizeChange(event, changeSizeOperation) {
+    event.stopPropagation();
+
+    if (event == null || changeSizeOperation == null || event.target.classList.contains('ui-state-disabled')) {
+      // Don't do anything in case of invalid input or a disabled button
+      return;
+    }
+
+    await waitUntilIdle(); // This ensures a smooth button handling
+
+    uiHelper.showTextLoadingIndicator();
+    await waitUntilIdle(); // Give the browser some time to render the loading indicator
+    changeSizeOperation(); // Perform the actual size change
+    uiHelper.hideTextLoadingIndicator();
+  }
+
+  showTextSizeMenu() {
+    app_controller.hideAllMenus();
+
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    var $menuButton = currentVerseListMenu.find(this.openMenuButton);
+    $menuButton.addClass('ui-state-active');
+    var buttonOffset = $menuButton.offset();
+    var $menuContainer = currentVerseListMenu.find(this.menuContainer);
+
+    var topOffset = buttonOffset.top + $menuButton.height() + 2;
+    var leftOffset = buttonOffset.left - 2;
+
+    if (leftOffset + $menuContainer.width() > $(window).width()) {
+      leftOffset = buttonOffset.left + $menuButton.width() - $menuContainer.width();
+    }
+
+    $menuContainer.css('top', topOffset);
+    $menuContainer.css('left', leftOffset);
+
+    this.menuIsOpened = true;
+    $menuContainer.show();
+  }
+
+  hideTextSizeMenu() {
+    if (this.menuIsOpened) {
+      $('#app-container').find(this.menuContainer).hide();
+      this.menuIsOpened = false;
+      $('#app-container').find(this.openMenuButton).removeClass('ui-state-active');
+    }
+  }
+
+  increaseSize() {
+    if (this._textSizeValue >= MAX_SIZE) {
+      return;
+    }
+
+    this._textSizeValue += 1;
+    this.updateStyle();
+    this.saveConfig();
+  }
+
+  decreaseSize() {
+    if (this._textSizeValue &lt;= MIN_SIZE) {
+      return;
+    }
+
+    this._textSizeValue -= 1;
+    this.updateStyle();
+    this.saveConfig();
+  }
+
+  resetSize() {
+    this._textSizeValue = DEFAULT_TEXT_SIZE;
+    this.updateStyle();
+    this.saveConfig();
+  }
+
+  updateTagsNotes(shouldTagsNotesResize = true) {
+    this._shouldTagsNotesResize = shouldTagsNotesResize;
+    this.updateStyle();
+  }
+
+  async saveConfig() {
+    if (window.ipcSettings) {
+      await window.ipcSettings.set(SETTINGS_KEY, this._textSizeValue);
+    }
+  }
+
+  updateStyle() {
+    this.stylesheet.insertRule(
+      `.verse-list ${this._shouldTagsNotesResize ? '' : '.verse-text '} {
+        font-size: ${this._textSizeValue * 0.1}em 
+      }`, this.stylesheet.cssRules.length);
+
+    if (this.stylesheet.cssRules.length > 1) {
+      this.stylesheet.deleteRule(0);
+    }
+
+    if (this._textSizeValue == DEFAULT_TEXT_SIZE) {
+      $('#app-container').find('.text-size-reset').addClass('ui-state-disabled');
+      $('#app-container').find('.text-size-increase').removeClass('ui-state-disabled');
+      $('#app-container').find('.text-size-decrease').removeClass('ui-state-disabled');
+    } else if (this._textSizeValue >= MAX_SIZE) {
+      $('#app-container').find('.text-size-reset').removeClass('ui-state-disabled');
+      $('#app-container').find('.text-size-increase').addClass('ui-state-disabled');
+      $('#app-container').find('.text-size-decrease').removeClass('ui-state-disabled');
+    } else if (this._textSizeValue &lt;= MIN_SIZE) {
+      $('#app-container').find('.text-size-reset').removeClass('ui-state-disabled');
+      $('#app-container').find('.text-size-increase').removeClass('ui-state-disabled');
+      $('#app-container').find('.text-size-decrease').addClass('ui-state-disabled');
+    } else {
+      $('#app-container').find('.text-size-reset').removeClass('ui-state-disabled');
+      $('#app-container').find('.text-size-increase').removeClass('ui-state-disabled');
+      $('#app-container').find('.text-size-decrease').removeClass('ui-state-disabled');
+    }
   }
 }
 
-module.exports = VerseStatisticsChart;</code></pre>
+module.exports = TextSizeSettings;</code></pre>
         </article>
     </section>
 

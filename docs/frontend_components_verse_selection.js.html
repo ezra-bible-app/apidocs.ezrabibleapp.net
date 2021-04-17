@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CordovaPlatform.html">CordovaPlatform</a></li></ul></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="AssignLastTagButton.html">AssignLastTagButton</a></li><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TextSizeSettings.html">TextSizeSettings</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -107,7 +107,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
 
-   Copyright (C) 2019 - 2021 Tobias Klein &lt;contact@ezra-project.net>
+   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
 
    Ezra Bible App is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -137,8 +137,8 @@ class VerseSelection {
     this.selected_verse_box_elements = null;
   }
 
-  initHelper(referenceSeparator, nsi) {
-    this.verseReferenceHelper = new VerseReferenceHelper(referenceSeparator, nsi);
+  initHelper(nsi) {
+    this.verseReferenceHelper = new VerseReferenceHelper(nsi);
   }
 
   initSelectable(verseList) {
@@ -148,7 +148,7 @@ class VerseSelection {
 
     verseList.selectable({
       filter: '.verse-text',
-      cancel: '.sword-xref-marker, .verse-notes, .section-header-box, .verse-content-edited, .tag-box, .tag, .load-book-results, .select-all-search-results-button',
+      cancel: '.sword-xref-marker, .verse-notes, .verse-content-edited, .tag-box, .tag, .load-book-results, .select-all-search-results-button',
 
       start: (event, ui) => {
         // Only reset existing selection if metaKey and ctrlKey are not pressed.
@@ -258,8 +258,8 @@ class VerseSelection {
         }
       }
 
-      var formatted_verse_list = await this.format_verse_list_for_view(currentBookVerseReferences, true, currentBookShortName);
-      var currentBookName = await ipcDb.getBookTitleTranslation(currentBookShortName);
+      var formatted_verse_list = await this.format_verse_list_for_view(currentBookVerseReferences, false, currentBookShortName);
+      var currentBookName = await (currentBookShortName == 'Ps' ? i18nHelper.getPsalmTranslation() : ipcDb.getBookTitleTranslation(currentBookShortName));
       var currentBookVerseReferenceDisplay = currentBookName + ' ' + formatted_verse_list;
       selected_verses_content.push(currentBookVerseReferenceDisplay);
     }
@@ -302,9 +302,9 @@ class VerseSelection {
                                                                        start_reference,
                                                                        end_reference);
 
-      if (turn_into_link) {
+      /*if (turn_into_link) {
         formatted_passage = "&lt;a href=\"javascript:app_controller.jumpToReference('" + start_reference + "', true);\">" + formatted_passage + "&lt;/a>";
-      }
+      }*/
     }
 
     return formatted_passage;
@@ -379,14 +379,16 @@ class VerseSelection {
     return verse_list_for_view;
   }
 
-  async format_passage_reference_for_view(book_short_title, start_reference, end_reference) {  
-    var start_chapter = parseInt(start_reference.split(reference_separator)[0]);
-    var start_verse = parseInt(start_reference.split(reference_separator)[1]);
-    var end_chapter = parseInt(end_reference.split(reference_separator)[0]);
-    var end_verse = parseInt(end_reference.split(reference_separator)[1]);
+  async format_passage_reference_for_view(book_short_title, start_reference, end_reference) {
+    var bibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+    var source_separator = await getReferenceSeparator(bibleTranslationId);
+
+    var start_chapter = parseInt(start_reference.split(source_separator)[0]);
+    var start_verse = parseInt(start_reference.split(source_separator)[1]);
+    var end_chapter = parseInt(end_reference.split(source_separator)[0]);
+    var end_verse = parseInt(end_reference.split(source_separator)[1]);
   
     var passage = start_chapter + reference_separator + start_verse;
-    var bibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
     var endChapterVerseCount = await ipcNsi.getChapterVerseCount(bibleTranslationId, book_short_title, end_chapter);
   
     if (book_short_title != null &amp;&amp;
@@ -486,7 +488,7 @@ class VerseSelection {
 
     this.getSelectedVersesLabel().html(selectedVerseDisplayText);
 
-    await tags_controller.update_tags_view_after_verse_selection(false);
+    await tags_controller.updateTagsViewAfterVerseSelection(false);
     
     var currentTab = app_controller.tab_controller.getTab();
 

@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CordovaPlatform.html">CordovaPlatform</a></li></ul></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="AssignLastTagButton.html">AssignLastTagButton</a></li><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TextSizeSettings.html">TextSizeSettings</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -107,7 +107,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
 
-   Copyright (C) 2019 - 2021 Tobias Klein &lt;contact@ezra-project.net>
+   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
 
    Ezra Bible App is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -124,7 +124,8 @@
    If not, see &lt;http://www.gnu.org/licenses/>. */
 
 const VerseSearch = require('../components/tab_search/verse_search.js');
-const VerseStatisticsChart = require('../components/verse_statistics_chart.js');
+
+const CANCEL_SEARCH_PERCENT_LIMIT = 90;
 
 /**
  * The ModuleSearch controller implements the module search functionality.
@@ -137,11 +138,10 @@ class ModuleSearchController {
     this.currentSearchTerm = null;
     this.search_menu_opened = false;
     this.verseSearch = new VerseSearch();
-    this.verseStatisticsChart = new VerseStatisticsChart();
     this.searchResultPerformanceLimit = platformHelper.getSearchResultPerformanceLimit();
   }
 
-  initModuleSearchMenu(tabIndex=undefined) {
+  initModuleSearch(tabIndex=undefined) {
     var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
     currentVerseListMenu.find('.module-search-button').bind('click', (event) => { this.handleSearchMenuClick(event); });
     
@@ -161,6 +161,93 @@ class ModuleSearchController {
     $(selectField).on("change", () => {
       this.validateSearchTerm();
     });
+
+    var cancelSearchButtonContainer = app_controller.getCurrentSearchCancelButtonContainer(tabIndex);
+    var cancelSearchButton = cancelSearchButtonContainer.find('button');
+
+    cancelSearchButton[0].addEventListener('mousedown', async () => {
+      this.cancelModuleSearch();
+    });
+  }
+
+  async cancelModuleSearch() {
+    this.disableCancelButton();
+
+    var tab = app_controller.tab_controller.getTab(this.currentSearchTabIndex);
+    if (tab != null) {
+      tab.setSearchCancelled(true);
+    }
+
+    this.enableOtherFunctionsAfterSearch();
+
+    var currentProgressValue = this.getCurrentProgressValue();
+
+    if (currentProgressValue != null &amp;&amp; !isNaN(currentProgressValue)) {
+      if (currentProgressValue &lt;= CANCEL_SEARCH_PERCENT_LIMIT) {
+        await ipcNsi.terminateModuleSearch();
+      }
+    }
+  }
+
+  getCurrentProgressValue() {
+    var searchProgressBar = app_controller.getCurrentSearchProgressBar(this.currentSearchTabIndex);
+    var currentProgressValue = null;
+
+    try {
+      currentProgressValue = parseInt(searchProgressBar[0].getAttribute("aria-valuenow"));
+    } catch (e) {}
+
+    return currentProgressValue;
+  }
+
+  disableCancelButton() {
+    var cancelSearchButtonContainer = app_controller.getCurrentSearchCancelButtonContainer(this.currentSearchTabIndex);
+    var cancelSearchButton = cancelSearchButtonContainer.find('button');
+
+    cancelSearchButton.removeClass('ui-state-active');
+    cancelSearchButton.addClass('ui-state-disabled');
+  }
+
+  getAllMenuButtonSelectors() {
+    return [
+      '.book-select-button',
+      '.tag-select-button',
+      '.assign-tag-menu-button',
+      '.new-standard-tag-button',
+      '.display-options-button',
+      '.text-size-settings-button'
+    ];
+  }
+
+  toggleMenuButtons(enable=true) {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    var allMenuButtonSelectors = this.getAllMenuButtonSelectors();
+
+    allMenuButtonSelectors.forEach((selector) => {
+      var button = currentVerseListMenu.find(selector);
+
+      if (enable) {
+        button.removeClass('ui-state-disabled');
+      } else {
+        button.addClass('ui-state-disabled');
+      }
+    });
+  }
+
+  disableOtherFunctionsDuringSearch() {
+    this.toggleMenuButtons(false);
+
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
+    var bibleSelect = currentVerseListMenu.find('select.bible-select');
+    bibleSelect.selectmenu("disable");
+  }
+
+  enableOtherFunctionsAfterSearch() {
+    this.toggleMenuButtons(true);
+
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(this.currentSearchTabIndex);
+    var bibleSelect = currentVerseListMenu.find('select.bible-select');
+    bibleSelect.selectmenu("enable");
   }
 
   validateSearchTerm() {
@@ -187,7 +274,7 @@ class ModuleSearchController {
     $('#search-is-case-sensitive').prop("checked", false);
     $('#search-extended-verse-boundaries').prop("checked", false);
     this.hideModuleSearchHeader(tabIndex);
-    this.verseStatisticsChart.resetChart(tabIndex);
+    app_controller.verse_statistics_chart.resetChart(tabIndex);
   }
 
   hideModuleSearchHeader(tabIndex=undefined) {
@@ -221,15 +308,13 @@ class ModuleSearchController {
     if (this.search_menu_opened) {
       app_controller.handleBodyClick();
     } else {
-      app_controller.book_selection_menu.hideBookMenu();
-      app_controller.tag_selection_menu.hideTagMenu();
-      app_controller.optionsMenu.hideDisplayMenu();
-      app_controller.tag_assignment_menu.hideTagAssignmentMenu();
+      app_controller.hideAllMenus();
+
       moduleSearchButton.addClass('ui-state-active');
 
       var module_search_button_offset = moduleSearchButton.offset();
       var menu = $('#app-container').find('#module-search-menu');
-      var top_offset = module_search_button_offset.top + moduleSearchButton.height() + 12;
+      var top_offset = module_search_button_offset.top + moduleSearchButton.height() + 1;
       var left_offset = module_search_button_offset.left;
 
       menu.css('top', top_offset);
@@ -307,15 +392,20 @@ class ModuleSearchController {
       return;
     }
 
+    this.currentSearchTabIndex = app_controller.tab_controller.getSelectedTabIndex();
+
     // Do not allow another concurrent search, disable the search menu button
     $('.module-search-button').addClass('ui-state-disabled');
 
-    this.verseStatisticsChart.resetChart(tabIndex);
+    this.disableOtherFunctionsDuringSearch();
+
+    app_controller.verse_statistics_chart.resetChart(tabIndex);
 
     if (tabIndex === undefined) {
       var tab = app_controller.tab_controller.getTab();
       tab.setSearchOptions(this.getSearchType(), this.isCaseSensitive(), this.useExtendedVerseBoundaries());
       tab.setTextType('search_results');
+      tab.setSearchCancelled(false);
     }
 
     //console.log("Starting search for " + this.currentSearchTerm + " on tab " + tabIndex);
@@ -347,8 +437,13 @@ class ModuleSearchController {
 
       if (tabIndex == undefined || tabIndex == app_controller.tab_controller.getSelectedTabIndex()) {
         var searchProgressBar = app_controller.getCurrentSearchProgressBar();
+        var cancelSearchButtonContainer = app_controller.getCurrentSearchCancelButtonContainer(tabIndex);
+        var cancelSearchButton = cancelSearchButtonContainer.find('button');
+        cancelSearchButton.removeClass('ui-state-disabled');
+
         uiHelper.initProgressBar(searchProgressBar);
         searchProgressBar.show();
+        cancelSearchButtonContainer.show();
       }
 
       // Only reset view if we got an event (in other words: not initially)
@@ -362,6 +457,9 @@ class ModuleSearchController {
         var searchResults = await ipcNsi.getModuleSearchResults((progress) => {
                                                                   var progressPercent = progress.totalPercent;
                                                                   searchProgressBar.progressbar("value", progressPercent);
+                                                                  if (progressPercent >= CANCEL_SEARCH_PERCENT_LIMIT) {
+                                                                    this.disableCancelButton();
+                                                                  }
                                                                 },
                                                                 currentBibleTranslationId,
                                                                 this.currentSearchTerm,
@@ -373,14 +471,15 @@ class ModuleSearchController {
         currentTab.setSearchResults(searchResults);
 
         var requestedBookId = -1; // all books requested
-        if (this.searchResultsExceedPerformanceLimit(tabIndex)) {
+        if (this.searchResultsExceedPerformanceLimit(this.currentSearchTabIndex)) {
           requestedBookId = 0; // no books requested - only list headers at first
         }
   
-        await this.renderCurrentSearchResults(requestedBookId, tabIndex);
+        await this.renderCurrentSearchResults(requestedBookId, this.currentSearchTabIndex);
       } catch (error) {
         console.log(error);
         app_controller.hideVerseListLoadingIndicator();
+        this.enableOtherFunctionsAfterSearch();
       }
     }
 
@@ -411,20 +510,20 @@ class ModuleSearchController {
 
     if (currentSearchResults.length > 0) {
       await app_controller.text_controller.requestTextUpdate(currentTabId,
-                                                                   null,
-                                                                   null,
-                                                                   cachedText,
-                                                                   null,
-                                                                   currentSearchResults,
-                                                                   null,
-                                                                   tabIndex,
-                                                                   requestedBookId,
-                                                                   target);
+                                                             null,
+                                                             null,
+                                                             cachedText,
+                                                             null,
+                                                             currentSearchResults,
+                                                             null,
+                                                             tabIndex,
+                                                             requestedBookId,
+                                                             target);
       
     } else {
-      app_controller.hideVerseListLoadingIndicator();
-      app_controller.translation_controller.hideTextLoadingIndicator();
-      app_controller.hideSearchProgressBar();
+      app_controller.hideVerseListLoadingIndicator(this.currentSearchTabIndex);
+      uiHelper.hideTextLoadingIndicator(this.currentSearchTabIndex);
+      app_controller.hideSearchProgressBar(this.currentSearchTabIndex);
     }
 
     this.hideSearchMenu();
@@ -433,7 +532,14 @@ class ModuleSearchController {
     if (currentSearchResults.length > 0) {
       moduleSearchHeaderText = i18n.t("bible-browser.search-result-header") + ' &lt;i>' + currentSearchTerm + '&lt;/i> (' + currentSearchResults.length + ')';
     } else {
-      moduleSearchHeaderText = i18n.t("bible-browser.no-search-results") + ' &lt;i>' + currentSearchTerm + '&lt;/i>';
+      var tab = app_controller.tab_controller.getTab(tabIndex);
+      var searchCancelled = tab != null ? tab.isSearchCancelled() : false;
+
+      if (searchCancelled) {
+        moduleSearchHeaderText = i18n.t("bible-browser.module-search-cancelled") + ' &lt;i>' + currentSearchTerm + '&lt;/i>';
+      } else {
+        moduleSearchHeaderText = i18n.t("bible-browser.no-search-results") + ' &lt;i>' + currentSearchTerm + '&lt;/i>';
+      }
     }
 
     var header = "&lt;h2>" + moduleSearchHeaderText + "&lt;/h2>";
@@ -467,10 +573,12 @@ class ModuleSearchController {
 
     moduleSearchHeader.show();
 
-    if (currentSearchResults.length > 0 &amp;&amp; requestedBookId &lt;= 0) {
+    /*if (currentSearchResults.length > 0 &amp;&amp; requestedBookId &lt;= 0) {
       var bibleBookStats = this.getBibleBookStatsFromSearchResults(currentSearchResults);
-      await this.verseStatisticsChart.updateChart(tabIndex, bibleBookStats);
-    }
+      await app_controller.verse_statistics_chart.updateChart(tabIndex, bibleBookStats);
+    }*/
+
+    this.enableOtherFunctionsAfterSearch();
   }
 
   selectAllSearchResults() {
@@ -479,28 +587,6 @@ class ModuleSearchController {
     allVerseTextElements.addClass('ui-selected');
     app_controller.verse_selection.updateSelected();
     app_controller.verse_selection.updateViewsAfterVerseSelection(i18n.t('bible-browser.all-search-results'));
-  }
-
-  async repaintChart(tabIndex=undefined) {
-    var currentTab = app_controller.tab_controller.getTab(tabIndex);
-    var currentSearchResults = currentTab.getSearchResults();
-
-    if (currentSearchResults != null) {
-      var bibleBookStats = this.getBibleBookStatsFromSearchResults(currentSearchResults);
-      this.verseStatisticsChart.resetChart(tabIndex);
-      await this.verseStatisticsChart.updateChart(tabIndex, bibleBookStats);
-    }
-  }
-
-  async repaintAllCharts() {
-    var tabCount = app_controller.tab_controller.getTabCount();
-
-    for (var i = 0; i &lt; tabCount; i++) {
-      var currentTab = app_controller.tab_controller.getTab(i);
-      if (currentTab.getTextType() == 'search_results') {
-        await this.repaintChart(i);
-      }
-    }
   }
 
   getBibleBookStatsFromSearchResults(search_results) {

@@ -88,7 +88,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CordovaPlatform.html">CordovaPlatform</a></li></ul></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="AssignLastTagButton.html">AssignLastTagButton</a></li><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TextSizeSettings.html">TextSizeSettings</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div>
                 
             </nav>
         </div>
@@ -107,7 +107,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
 
-   Copyright (C) 2019 - 2021 Tobias Klein &lt;contact@ezra-project.net>
+   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
 
    Ezra Bible App is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -269,7 +269,7 @@ class BookSelectionMenu {
                                                              null);
 
       await waitUntilIdle();
-      tags_controller.update_tag_list(currentBook);
+      tags_controller.updateTagList(currentBook);
     }, 50);
   }
 
@@ -291,10 +291,7 @@ class BookSelectionMenu {
     if (this.book_menu_is_opened) {
       app_controller.handleBodyClick();
     } else {
-      app_controller.tag_selection_menu.hideTagMenu();
-      app_controller.module_search_controller.hideSearchMenu();
-      app_controller.optionsMenu.hideDisplayMenu();
-      app_controller.tag_assignment_menu.hideTagAssignmentMenu();
+      app_controller.hideAllMenus();
       
       var currentVerseListMenu = app_controller.getCurrentVerseListMenu();
       var book_button = currentVerseListMenu.find('.book-select-button');
@@ -302,7 +299,7 @@ class BookSelectionMenu {
 
       var book_button_offset = book_button.offset();
       var menu = $('#app-container').find('#book-selection-menu');
-      var top_offset = book_button_offset.top + book_button.height() + 12;
+      var top_offset = book_button_offset.top + book_button.height() + 1;
       var left_offset = book_button_offset.left;
 
       menu.css('top', top_offset);

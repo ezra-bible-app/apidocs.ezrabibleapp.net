@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs frontend/components/verse_statistics_chart.js</title>
+  <title>Ezra Bible App Design Docs frontend/components/tags/assign_last_tag_button.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -96,7 +96,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Source</p>
-                    <h1>frontend/components/verse_statistics_chart.js</h1>
+                    <h1>frontend/components/tags/assign_last_tag_button.js</h1>
                 </header>
                 
 
@@ -123,145 +123,95 @@
    along with Ezra Bible App. See the file LICENSE.
    If not, see &lt;http://www.gnu.org/licenses/>. */
 
-
 /**
- * The VerseStatisticsChart component renders a chart with verse count statistics per bible book. This is used by the ModuleSearch component.
+ * The AssignLastTagButton always shows the latest used tag. It gets updated when
+ * a new tag has been created, when a recently created tag gets deleted,
+ * when a tag is renamed or when an existing tag has been used via the
+ * tag assignment menu. It is only enabled when verses are selected and do not have the
+ * respective tag yet.
  * 
  * @category Component
  */
-class VerseStatisticsChart {
-  constructor() {
-    this.chartColors = {
-      red: 'rgb(255, 99, 132)',
-      orange: 'rgb(255, 159, 64)',
-      yellow: 'rgb(255, 205, 86)',
-      green: 'rgb(75, 192, 192)',
-      blue: 'rgb(54, 162, 235)',
-      purple: 'rgb(153, 102, 255)',
-      grey: 'rgb(201, 203, 207)'
-    };
-  }
+class AssignLastTagButton {
+  constructor() {}
 
-  getVerseStatisticsChart(tabIndex=undefined) {
-    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
-    return currentVerseListFrame.find('.verse-statistics-chart');
-  }
+  init(tabIndex=undefined) {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
 
-  resetChart(tabIndex=undefined) {
-    var currentVerseListFrame = app_controller.getCurrentVerseListFrame(tabIndex);
-    var container = currentVerseListFrame.find('.verse-statistics-chart-container');
-
-    container.hide();
-    container.empty();
-
-    var canvasElement = "&lt;canvas class='verse-statistics-chart'>&lt;/canvas>";
-    container.append(canvasElement);
-  }
-
-  async repaintChart(tabIndex=undefined) {
-    var currentTab = app_controller.tab_controller.getTab(tabIndex);
-    if (!currentTab.isVerseList()) {
-      return;
-    }
-
-    var currentTextType = currentTab.getTextType();
-    var bibleBookStats = null;
-
-    if (currentTextType == 'search_results') {
-      var currentTab = app_controller.tab_controller.getTab(tabIndex);
-      var currentSearchResults = currentTab.getSearchResults();
-      bibleBookStats = app_controller.module_search_controller.getBibleBookStatsFromSearchResults(currentSearchResults);
-    } else {
-      bibleBookStats = app_controller.getBibleBookStatsFromVerseList(tabIndex);
-    }
-
-    var numberOfBibleBookStatsEntries = Object.keys(bibleBookStats).length;
-
-    if (numberOfBibleBookStatsEntries > 0) {
-      this.resetChart(tabIndex);
-      await this.updateChart(tabIndex, bibleBookStats);
-    }
-  }
-
-  async repaintAllCharts() {
-    var tabCount = app_controller.tab_controller.getTabCount();
-
-    for (var i = 0; i &lt; tabCount; i++) {
-      var currentTab = app_controller.tab_controller.getTab(i);
-
-      if (currentTab.isVerseList()) {
-        await this.repaintChart(i);
-      }
-    }
-  }
-
-  async updateChart(tabIndex=undefined, bibleBookStats) {
-    require('chart.js/dist/Chart.bundle.min.js');
-
-    var numberOfBooks = Object.keys(bibleBookStats).length;
-    if (numberOfBooks &lt; 2) {
-      return;
-    }
-    
-    var currentTranslation = app_controller.tab_controller.getTab(tabIndex).getBibleTranslationId();
-    var bookList = await ipcNsi.getBookList(currentTranslation);
-
-    const [labels, values] = await ipcGeneral.getSearchStatisticChartData(currentTranslation, bookList, bibleBookStats);
-
-    var data = {
-      labels: labels,
-      datasets: [{
-        data: values,
-        backgroundColor: this.chartColors.blue,
-        borderWidth: 1
-      }]
-    };
-
-    var chartElement = this.getVerseStatisticsChart(tabIndex);
-    var useNightMode = app_controller.optionsMenu._nightModeOption.isChecked();
-    var labelFontColor = useNightMode ? "white" : "black";
-    
-    new Chart(chartElement, {
-      type: 'bar',
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        scaleShowValues: true,
-        scales: {
-          xAxes: [{
-            ticks: {
-              autoSkip: false,
-              fontSize: 10,
-              fontColor: labelFontColor,
-            },
-            // grid line settings
-            gridLines: {
-              drawOnChartArea: false, // only want the grid lines for one axis to show up
-            },
-          }],
-          yAxes: [{
-            gridLines: {
-              color: this.chartColors.grey,
-              zeroLineColor: this.chartColors.grey
-            },
-            ticks: {
-              fontColor: labelFontColor,
-              precision: 0
-            }
-          }]
-        }
+    currentVerseListMenu.find('.assign-last-tag-button').bind('click', async (event) => {
+      if (!event.target.classList.contains('ui-state-disabled')) {
+        uiHelper.showTextLoadingIndicator();
+        await waitUntilIdle();
+        await tags_controller.assignLastTag();
+        uiHelper.hideTextLoadingIndicator();
       }
     });
+  }
 
-    $(chartElement).parent().show();
+  async onLatestUsedTagChanged(tagId=undefined, added=true, currentDbTag=undefined) {
+    if (currentDbTag != undefined) {
+      tagId = currentDbTag.id;
+    } else if (tagId == undefined) {
+      tagId = tags_controller.tag_store.latest_tag_id;
+    }
+
+    var currentTag = null;
+
+    if (currentDbTag != undefined) {
+      currentTag = currentDbTag;
+    } else {
+      currentTag = await tags_controller.tag_store.getTag(tagId);
+    }
+
+    if (currentTag != null) {
+      var assignLastTagButton = $('.assign-last-tag-button');
+      var label = i18n.t('tags-toolbar.assign-last-tag') + ': ' + currentTag.title;
+      assignLastTagButton.text(label);
+
+      if (added) {
+        assignLastTagButton.addClass('ui-state-disabled');
+      } else {
+        assignLastTagButton.removeClass('ui-state-disabled');
+      }
+
+      // Resize the verse list in case the tag label change had an impact on the
+      // verse list menu (number of lines changed).
+      await waitUntilIdle();
+      uiHelper.resizeVerseList();
+    }
+  }
+
+  async refreshLastTagButtonState(versesSelected, selectedVerseTags) {
+    if (versesSelected) {
+      if (tags_controller.tag_store.latest_tag_id != null) {
+        var tagFound = false;
+
+        for (var i = 0; i &lt; selectedVerseTags.length; i++) {
+          var currentTagTitle = selectedVerseTags[i].title;
+          var latestTag = await tags_controller.tag_store.getTag(tags_controller.tag_store.latest_tag_id);
+
+          if (currentTagTitle == latestTag.title) {
+            tagFound = true;
+            break;
+          }
+        }
+
+        if (!tagFound || selectedVerseTags.length == 0) {
+          $('.assign-last-tag-button').removeClass('ui-state-disabled');
+        } else {
+          $('.assign-last-tag-button').addClass('ui-state-disabled');
+        }
+
+      } else {
+        $('.assign-last-tag-button').addClass('ui-state-disabled');
+      }
+    } else {
+      $('.assign-last-tag-button').addClass('ui-state-disabled');
+    }
   }
 }
 
-module.exports = VerseStatisticsChart;</code></pre>
+module.exports = AssignLastTagButton;</code></pre>
         </article>
     </section>
 

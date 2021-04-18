@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs backend/database/models/metarecord.js</title>
+  <title>Ezra Bible App Design Docs platform_init</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -95,86 +93,141 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>backend/database/models/metarecord.js</h1>
+                    <p>Module</p>
+                    <h1>platform_init</h1>
                 </header>
                 
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
+        
+            
+        
+    
+</header>
 
-   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>This is the entry point to Ezra Bible App. The entry function is
+<code>initPlatform()</code>. The script runs some initial platform compatibility checks.
+On Android it shows a message box if the used webview component is not supported.
+Note that the code in this script cannot make use of any modern JavaScript features,
+because on Android it needs to at least successfully run on older webview components to
+show the respective info message. Once the compatibility checks are completed this script
+then dynamically loads the module <code>ezra_init.js</code>.</p></div>
+        
 
-   Ezra Bible App is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 2 of the License, or
-   (at your option) any later version.
+        
+            
 
-   Ezra Bible App is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with Ezra Bible App. See the file LICENSE.
-   If not, see &lt;http://www.gnu.org/licenses/>. */
 
-'use strict';
 
-/**
- * The MetaRecord model is used to manage meta information for the Ezra Bible App database, currently the time of the last modification.
- * @typedef MetaRecord
- * @category Model
- */
-module.exports = (sequelize, DataTypes) => {
-  const MetaRecord = sequelize.define('MetaRecord', {
-    lastModifiedAt: DataTypes.DATE
-  }, {
-    timestamps: false
-  });
 
-  MetaRecord.associate = function(models) {
-    // associations can be defined here
-  };
 
-  MetaRecord.getLastUpdate = async function() {
-    var record = await models.MetaRecord.findOne({
-      where: {
-        id: 1,
-      }
-    });
 
-    return (record != null ? record.lastModifiedAt : null);
-  };
 
-  MetaRecord.updateLastModified = async function() {
-    var currentTime = new Date(Date.now()).getTime();
 
-    const [ metaRecord, created ] = await MetaRecord.findOrCreate({
-      where: {
-        id: 1,
-      },
-      defaults: {
-        lastModifiedAt: currentTime
-      }
-    });
 
-    if (!created) {
-      metaRecord.lastModifiedAt = currentTime;
-      await metaRecord.save();
-    }
 
-    return metaRecord;
-  };
 
-  return MetaRecord;
-};</code></pre>
-        </article>
-    </section>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="frontend_platform_init.js.html" class="button">View Source</a>
+            <span>
+                <a href="frontend_platform_init.js.html">frontend/platform_init.js</a>, <a href="frontend_platform_init.js.html#line19">line 19</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

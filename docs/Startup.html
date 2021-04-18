@@ -5,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs OptionsMenu</title>
+  <title>Ezra Bible App Design Docs Startup</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -94,7 +94,7 @@
             <div class="content">
                 <header class="page-title">
                     <p>Class</p>
-                    <h1>OptionsMenu</h1>
+                    <h1>Startup</h1>
                 </header>
                 
 
@@ -105,17 +105,10 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>OptionsMenu<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>Startup<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description"><p>The OptionsMenu component handles all event handling related to the options menu.</p>
-<p>To add a new option, perform the following steps:</p>
-<ul>
-<li>Add the html element for the new option in <code>/html/display_options_menu.html</code></li>
-<li>Add the locales for the new option in /locales/en/translation.json and copy the string to all other languages</li>
-<li>Add a function <code>showOrHide&lt;Option&gt;BasedOnOption()</code> that responds to changes</li>
-<li>Add the initialization for the new option in the <code>init()</code> function</li>
-<li>Add a call to <code>showOrHide&lt;Option&gt;BasedOnOption()</code> in <code>refreshViewBasedOnOptions()</code></li>
-</ul></div>
+            <div class="class-description"><p>The Startup class has the purpose to start up the application.
+The main entry point is the method <code>initApplication()</code>.</p></div>
         
     
 </header>
@@ -134,12 +127,12 @@
 
 
     
-    <h4 class="name" id="OptionsMenu">
-        <a class="href-link" href="#OptionsMenu">#</a>
+    <h4 class="name" id="Startup">
+        <a class="href-link" href="#Startup">#</a>
         
         <span class="code-name">
             
-                new OptionsMenu<span class="signature">()</span><span class="type-signature"></span>
+                new Startup<span class="signature">()</span><span class="type-signature"></span>
             
         </span>
     </h4>
@@ -193,9 +186,9 @@
 
     
         <p class="tag-source">
-            <a href="frontend_components_options_menu.js.html" class="button">View Source</a>
+            <a href="frontend_startup.js.html" class="button">View Source</a>
             <span>
-                <a href="frontend_components_options_menu.js.html">frontend/components/options_menu.js</a>, <a href="frontend_components_options_menu.js.html#line34">line 34</a>
+                <a href="frontend_startup.js.html">frontend/startup.js</a>, <a href="frontend_startup.js.html#line40">line 40</a>
             </span>
         </p>
     

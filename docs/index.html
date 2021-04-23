@@ -123,7 +123,7 @@
         <article><p>Welcome to the Design documentation of Ezra Bible App!</p>
 <p><a href='#file-structure'>File structure</a> | <a href='#db-schema'>Database schema</a></p>
 <h2>Architecture overview</h2>
-<p>Ezra Bible App mostly uses plain, vanilla JavaScript in combination with some additional technology like jQuery, jQuery UI, Sequelize and the Pug template engine (see <a href="https://github.com/ezra-project/ezra-project/blob/master/TECH.md">here</a> for a complete list of technologies). For performance reasons, it does not use a web framework like React or Angular. Nevertheless, the architecture is designed in a modular way and should make it easy for new developers.</p>
+<p>Ezra Bible App mostly uses plain, vanilla JavaScript in combination with some additional technology like jQuery, jQuery UI, Sequelize and the Pug template engine (see <a href="https://github.com/ezra-bible-app/ezra-bible-app/blob/master/TECH.md">here</a> for a complete list of technologies). For performance reasons, it does not use a web framework like React or Angular. Nevertheless, the architecture is designed in a modular way and should make it easy for new developers.</p>
 <h3>Backend vs. Frontend</h3>
 <p>The high-level architecture of Ezra Bible App is separated into two parts - backend and frontend. The backend contains all functionality that deals with persistence:</p>
 <ul>
@@ -145,7 +145,7 @@
 <h3>Sequelize Models</h3>
 <p>Sequelize (an object-oriented wrapper) is used to manage the interface to the (SQLite) database. Each database table is represented by one model. Besides the standard Sequelize API that is attached to every model, you find various custom querying functions in the models.</p>
 <h3>node-sword-interface</h3>
-<p>To access SWORD modules, Ezra Bible App uses the <a href="https://github.com/ezra-project/node-sword-interface">node-sword-interface</a> library. This library is implemented in C++ and offers a simple, flat, facade style interface that wraps calls to the SWORD library.</p>
+<p>To access SWORD modules, Ezra Bible App uses the <a href="https://github.com/ezra-bible-app/node-sword-interface">node-sword-interface</a> library. This library is implemented in C++ and offers a simple, flat, facade style interface that wraps calls to the SWORD library.</p>
 <h3>The big picture</h3>
 <div class="mermaid">
 erDiagram

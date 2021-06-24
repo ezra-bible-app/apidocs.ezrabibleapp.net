@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Bible App Design Docs frontend/helpers/sword_module_helper.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Bible App Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/ezra-bible-app/ezra-bible-app"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezrabibleapp.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CordovaPlatform.html">CordovaPlatform</a></li><li><a href="ElectronPlatform.html">ElectronPlatform</a></li><li><a href="HierarchicalObjectCache.html">HierarchicalObjectCache</a></li></ul><h3>Global</h3><ul><li><a href="global.html#getCachedItem">getCachedItem</a></li></ul></div><div class="category"><h2>Component</h2><h3>Classes</h3><ul><li><a href="AssignLastTagButton.html">AssignLastTagButton</a></li><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="EmojiButtonTrigger.html">EmojiButtonTrigger</a></li><li><a href="InstallModuleAssistant.html">InstallModuleAssistant</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="RemoveModuleAssistant.html">RemoveModuleAssistant</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TaggedVerseExport.html">TaggedVerseExport</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TextSizeSettings.html">TextSizeSettings</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Modules</h3><ul><li><a href="module-i18nController.html">i18nController</a></li></ul><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul></div><div class="category"><h2>Helper</h2><h3>Modules</h3><ul><li><a href="module-sword_module_helper.html">sword_module_helper</a></li><li><a href="module-verse_list_title_helper.html">verse_list_title_helper</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div><div class="category"><h2>Startup</h2><h3>Modules</h3><ul><li><a href="module-ezra_init.html">ezra_init</a></li><li><a href="module-platform_init.html">platform_init</a></li></ul><h3>Classes</h3><ul><li><a href="Startup.html">Startup</a></li></ul></div><div class="category"><h2>Utility</h2><h3>Modules</h3><ul><li><a href="module-ezraHelper.html">ezraHelper</a></li><li><a href="module-i18NHelper.html">i18NHelper</a></li><li><a href="module-languageMapper.html">languageMapper</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>frontend/helpers/sword_module_helper.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
+
+   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+
+   Ezra Bible App is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Bible App is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Bible App. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+/**
+ * This module offers sword module related functionality
+ * @module sword_module_helper
+ * @category Helper
+ */
+
+const i18nHelper = require('./i18n_helper.js');
+
+var _moduleVersificationCache = {};
+
+module.exports.getModuleDescription = async function(moduleId, isRemote=false) {
+  var moduleInfo = "No info available!";
+
+  try {
+    var swordModule = null;
+
+    if (isRemote) {
+      swordModule = await ipcNsi.getRepoModule(moduleId);
+    } else {
+      swordModule = await ipcNsi.getLocalModule(moduleId);
+    }
+    
+    var moduleInfo = "";
+    
+    if (isRemote) {
+      moduleInfo += "&lt;b>" + swordModule.description + "&lt;/b>&lt;br>&lt;br>";
+    }
+
+    moduleInfo += "&lt;p class='external'>";
+    var about = swordModule.about.replace(/\\pard/g, "").replace(/\\par/g, "&lt;br>");
+    moduleInfo += about;
+    moduleInfo += "&lt;/p>";
+
+  } catch (ex) {
+    console.error("Got exception while trying to get module description: " + ex);
+  }
+
+  return moduleInfo;
+}
+
+module.exports.getModuleInfo = async function(moduleId, isRemote=false, includeModuleDescription=true) {
+  var moduleInfo = "No info available!";
+
+  try {
+    var swordModule = null;
+
+    if (isRemote) {
+      swordModule = await ipcNsi.getRepoModule(moduleId);
+    } else {
+      swordModule = await ipcNsi.getLocalModule(moduleId);
+    }
+    
+    var moduleInfo = "";
+
+    if (includeModuleDescription) {
+      if (isRemote) {
+        moduleInfo += "&lt;b>" + swordModule.description + "&lt;/b>&lt;br>&lt;br>";
+      }
+
+      moduleInfo += "&lt;p class='external'>";
+      var about = swordModule.about.replace(/\\pard/g, "").replace(/\\par/g, "&lt;br>");
+      moduleInfo += about;
+      moduleInfo += "&lt;/p>";
+    }
+    
+    var moduleSize = Math.round(swordModule.size / 1024) + " KB";
+
+    var yes = i18n.t("general.yes");
+    var no = i18n.t("general.no");
+
+    if (includeModuleDescription) {
+      moduleInfo += `&lt;p style='margin-top: 1em; padding-top: 1em; border-top: 1px solid grey; font-weight: bold'>${i18n.t("general.sword-module-info")}&lt;/p>`;
+    }
+
+    moduleInfo += "&lt;table>";
+    moduleInfo += "&lt;tr>&lt;td style='width: 11em;'>" + i18n.t("general.module-name") + ":&lt;/td>&lt;td>" + swordModule.name + "&lt;/td>&lt;/tr>";
+    moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-version") + ":&lt;/td>&lt;td>" + swordModule.version + "&lt;/td>&lt;/tr>";
+    moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-language") + ":&lt;/td>&lt;td>" + i18nHelper.getLanguageName(swordModule.language) + "&lt;/td>&lt;/tr>";
+    moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-license") + ":&lt;/td>&lt;td>" + swordModule.distributionLicense + "&lt;/td>&lt;/tr>";
+
+    if (swordModule.type == 'Biblical Texts') {
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-strongs") + ":&lt;/td>&lt;td>" + (swordModule.hasStrongs ? yes : no) + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-headings") + ":&lt;/td>&lt;td>" + (swordModule.hasHeadings ? yes : no) + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-footnotes") + ":&lt;/td>&lt;td>" + (swordModule.hasFootnotes ? yes : no) + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-xrefs") + ":&lt;/td>&lt;td>" + (swordModule.hasCrossReferences ? yes : no) + "&lt;/td>&lt;/tr>";
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-redletter") + ":&lt;/td>&lt;td>" + (swordModule.hasRedLetterWords ? yes : no) + "&lt;/td>&lt;/tr>";
+    }
+
+    moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-size") + ":&lt;/td>&lt;td>" + moduleSize + "&lt;/td>&lt;/tr>";
+    if (!isRemote) {
+      moduleInfo += "&lt;tr>&lt;td>" + i18n.t("general.module-location") + ":&lt;/td>&lt;td>" + swordModule.location + "&lt;/td>&lt;/tr>";
+    }
+
+    moduleInfo += "&lt;/table>";
+
+    if (isRemote &amp;&amp; swordModule.locked &amp;&amp; swordModule.unlockInfo != "") {
+      moduleInfo += "&lt;p style='margin-top: 1em; padding-top: 1em; border-top: 1px solid grey; font-weight: bold'>" + i18n.t("general.sword-unlock-info") + "&lt;/p>";
+      moduleInfo += "&lt;p class='external'>" + swordModule.unlockInfo + "&lt;/p>";
+    }
+  } catch (ex) {
+    console.error("Got exception while trying to get module info: " + ex);
+  }
+
+  return moduleInfo;
+}
+
+module.exports.getSwordModule = async function(moduleId) {
+  if (moduleId == null) {
+    return null;
+  }
+
+  var swordModule = null;
+
+  try {
+    swordModule = await ipcNsi.getLocalModule(moduleId);
+  } catch (e) {
+    console.log("Could not get local sword module for " + moduleId);
+  }
+
+  return swordModule;
+}
+
+module.exports.moduleHasStrongs = async function(moduleId) {
+  var swordModule = await this.getSwordModule(moduleId);
+
+  if (swordModule != null) {
+    return swordModule.hasStrongs;
+  } else {
+    return false;
+  }
+}
+
+module.exports.moduleHasHeaders = async function(moduleId) {
+  var swordModule = await this.getSwordModule(moduleId);
+
+  if (swordModule != null) {
+    return swordModule.hasHeadings;
+  } else {
+    return false;
+  }
+}
+
+module.exports.getVersification = async function(moduleId) {
+  if (moduleId == null) {
+    return null;
+  }
+
+  if (moduleId in _moduleVersificationCache) {
+    return _moduleVersificationCache[moduleId];
+  }
+
+  var versification = null;
+  var psalm3Verses = [];
+  var revelation12Verses = [];
+
+  try {
+    psalm3Verses = await ipcNsi.getChapterText(moduleId, 'Psa', 3);
+  } catch (e) {
+    console.log("TranslationController.getVersification: Could not retrieve chapter text for Psalm 3 of " + moduleId);
+  }
+
+  try {
+    revelation12Verses = await ipcNsi.getChapterText(moduleId, 'Rev', 12);
+  } catch (e) {
+    console.log("TranslationController.getVersification: Could not retrieve chapter text for Revelation 12 of " + moduleId);
+  }
+
+  if (psalm3Verses.length == 8 || revelation12Verses.length == 17) { // ENGLISH versification
+    versification = "ENGLISH";
+
+  } else if (psalm3Verses.length == 9 || revelation12Verses.length == 18) { // HEBREW versification
+    versification = "HEBREW";
+
+  } else { // Unknown versification
+
+    versification = "UNKNOWN"
+
+    /*console.log("Unknown versification!");
+    console.log("Psalm 3 has " + psalm3Verses.length + " verses.");
+    console.log("Revelation 12 has " + revelation12Verses.length + " verses.");*/
+  }
+
+  _moduleVersificationCache[moduleId] = versification;
+  return versification;
+}
+
+module.exports.getThreeLetterVersification = async function(moduleId) {
+  var versification = (await this.getVersification(moduleId) == 'ENGLISH' ? 'eng' : 'heb');
+  return versification;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

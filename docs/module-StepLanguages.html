@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +5,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs frontend/ezra_init.js</title>
+  <title>Ezra Bible App Design Docs StepLanguages</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -96,108 +94,142 @@ component displays available for installation modules from selected repositories
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Source</p>
-                    <h1>frontend/ezra_init.js</h1>
+                    <p>Module</p>
+                    <h1>StepLanguages</h1>
                 </header>
                 
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
+        
+            
+        
+    
+</header>
 
-   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>component retrieves, sorts and displays all available languages for module installation</p></div>
+        
 
-   Ezra Bible App is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 2 of the License, or
-   (at your option) any later version.
+        
+            
 
-   Ezra Bible App is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
-   along with Ezra Bible App. See the file LICENSE.
-   If not, see &lt;http://www.gnu.org/licenses/>. */
 
-/**
- * This module is the second one loaded (after platform_init.js) and handles the app's `load` event.
- * It then detects whether we are running on Electron or Cordova and initiates the corresponding startup logic.
- * @module ezra_init
- * @category Startup 
- */
 
-window.app = null;
 
-// Platform Helper
-var PlatformHelper = null;
-var Startup = null;
 
-if (isDev) {
-  PlatformHelper = require('./app/lib/platform_helper.js');
-  Startup = require('./app/frontend/startup.js');
-} else {
-  PlatformHelper = require('../lib/platform_helper.js');
-  Startup = require('./startup.js');
-}
 
-window.platformHelper = new PlatformHelper();
-window.startup = new Startup();
-window.cordovaPlatform = null;
-window.electronPlatform = null;
 
-// Extend NodeList with the forEach function from Array
-NodeList.prototype.forEach = Array.prototype.forEach;
 
-$.create_xml_doc = function(string)
-{
-  var doc = (new DOMParser()).parseFromString(string, 'text/xml');
-  return doc;
-}
 
-window.addEventListener('load', function() {
-  console.log("load event fired!");
 
-  startup.earlyRestoreLocalizedString();
 
-  if (platformHelper.isCordova()) {
 
-    var CordovaPlatform = require('./platform/cordova_platform.js');
-    cordovaPlatform = new CordovaPlatform();
-    cordovaPlatform.init();
 
-  } else if (platformHelper.isElectron()) {
+<dl class="details">
 
-    var ElectronPlatform = null;
+    
 
-    if (isDev) {
-      ElectronPlatform = require('./app/frontend/platform/electron_platform.js');
-    } else {
-      ElectronPlatform = require('./platform/electron_platform.js');
-    }
+    
 
-    electronPlatform = new ElectronPlatform();
+    
 
-    console.log("Initializing app on Electron platform ...");
-    startup.initApplication();
+    
 
-  } else {
+    
 
-    console.error("FATAL: Unknown platform");
-    startup.initApplication();
-  }
-});
+    
 
-if (platformHelper.isCordova() || platformHelper.isTest()) {
-  $('#loading-subtitle').show();
-}
-</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+        <p class="tag-source">
+            <a href="frontend_components_module_assistant_step_languages.js.html" class="button">View Source</a>
+            <span>
+                <a href="frontend_components_module_assistant_step_languages.js.html">frontend/components/module_assistant/step_languages.js</a>, <a href="frontend_components_module_assistant_step_languages.js.html#line84">line 84</a>
+            </span>
+        </p>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    
+        <pre class="prettyprint"><code>&lt;step-languages>&lt;/step-languages></code></pre>
+    
+
+
+
+        
+    
+    </div>
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

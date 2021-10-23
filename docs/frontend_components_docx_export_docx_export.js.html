@@ -1,0 +1,327 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Bible App Design Docs frontend/components/docx_export/docx_export.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Bible App Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/ezra-bible-app/ezra-bible-app"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezrabibleapp.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CordovaPlatform.html">CordovaPlatform</a></li><li><a href="ElectronPlatform.html">ElectronPlatform</a></li><li><a href="HierarchicalObjectCache.html">HierarchicalObjectCache</a></li></ul><h3>Global</h3><ul><li><a href="global.html#clearLongPressTimer">clearLongPressTimer</a></li><li><a href="global.html#getCachedItem">getCachedItem</a></li><li><a href="global.html#getLanguageCode">getLanguageCode</a></li><li><a href="global.html#handleTouchMove">handleTouchMove</a></li><li><a href="global.html#listCheckboxSection">listCheckboxSection</a></li><li><a href="global.html#startTimer">startTimer</a></li><li><a href="global.html#subscribe">subscribe</a></li></ul></div><div class="category"><h2>Component</h2><h3>Modules</h3><ul><li><a href="FuzzySearch%250Acomponent%2520displays%2520search%2520input%2520field;%2520when%2520initialized%2520with%2520data%2520by%2520init%2520method%2520%250Ait%2520will%2520trigger%2520custom%2520_searchResultsReady_%2520event%2520with%2520_fuzzy_%2520(approximate)%2520search%2520results.%250AComponent%2520internally%2520uses%2520fuse.js%2520(https___fusejs.io)%2520and%2520%250Ashape%2520of%2520results%2520returned%2520in%2520_searchResultsReady_%2520event.detail.results%2520reflects%2520%250Aresults%2520returned%2520by%2520fuse.js%2520(https___fusejs.io_examples.html)%250A%250A_fuzzy-search___fuzzy-search_%2520will%2520generate%2520only%2520search%2520input%2520field.%2520Providing%2520data%2520to%2520search%2520in%2520and%2520getting%2520results%2520of%2520%250Athe%2520search%2520should%2520be%2520done%2520with%2520_init_%2520method%2520and%2520handling%2520of%2520_searchResultsReady_%2520event%2520respectivelymodule_.html">FuzzySearch
+component displays search input field; when initialized with data by init method 
+it will trigger custom 'searchResultsReady' event with "fuzzy" (approximate) search results.
+Component internally uses fuse.js (https://fusejs.io) and 
+shape of results returned in 'searchResultsReady' event.detail.results reflects 
+results returned by fuse.js (https://fusejs.io/examples.html)
+
+<fuzzy-search></fuzzy-search> will generate only search input field. Providing data to search in and getting results of 
+the search should be done with 'init' method and handling of 'searchResultsReady' event respectively</a></li><li><a href="module-ModuleAssistant.html">ModuleAssistant</a></li><li><a href="module-StepLanguages.html">StepLanguages</a></li><li><a href="module-StepModules.html">StepModules</a></li><li><a href="module-StepModulesRemove.html">StepModulesRemove</a></li><li><a href="module-StepRepositories.html">StepRepositories</a></li></ul><h3>Classes</h3><ul><li><a href="AssignLastTagButton.html">AssignLastTagButton</a></li><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="DocxExport.html">DocxExport</a></li><li><a href="EmojiButtonTrigger.html">EmojiButtonTrigger</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagAssignmentMenu.html">TagAssignmentMenu</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TextSizeSettings.html">TextSizeSettings</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Modules</h3><ul><li><a href="module-i18nController.html">i18nController</a></li></ul><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul><h3>Global</h3><ul><li><a href="global.html#exportFilePath">exportFilePath</a></li><li><a href="global.html#generateDocument">generateDocument</a></li></ul></div><div class="category"><h2>Helper</h2><h3>Modules</h3><ul><li><a href="module-sword_module_helper.html">sword_module_helper</a></li><li><a href="module-verse_list_title_helper.html">verse_list_title_helper</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div><div class="category"><h2>Startup</h2><h3>Modules</h3><ul><li><a href="module-ezra_init.html">ezra_init</a></li><li><a href="module-platform_init.html">platform_init</a></li></ul><h3>Classes</h3><ul><li><a href="Startup.html">Startup</a></li></ul></div><div class="category"><h2>Utility</h2><h3>Modules</h3><ul><li><a href="module-emojiHelper.html">emojiHelper</a></li><li><a href="module-ezraHelper.html">ezraHelper</a></li><li><a href="module-fsHelper.html">fsHelper</a></li><li><a href="module-i18NHelper.html">i18NHelper</a></li><li><a href="module-languageMapper.html">languageMapper</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>frontend/components/docx_export/docx_export.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
+
+   Copyright (C) 2019 - 2021 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+
+   Ezra Bible App is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Bible App is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Bible App. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+const exportController = require('./export_controller.js');
+const { html } = require('../../helpers/ezra_helper.js');
+const swordHelper = require('../../helpers/sword_module_helper.js');
+
+/**
+ * The DocxExport component implements the export of tagged verses or verses and notes into a Word (docx) document.
+ * 
+ * @category Component
+ */
+class DocxExport {
+
+  enableExportButton(tabIndex, type='TAGS') {
+    var currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+    var exportButton = currentVerseListMenu.find('.export-docx-button');
+
+    exportButton.removeClass('ui-state-disabled');
+    exportButton.unbind('click');
+    exportButton.bind('click', (event) => {
+      if (!$(event.target).hasClass('ui-state-disabled')) {
+        this._runExport(type);
+      }
+    });
+    exportButton.show();
+    exportButton.removeClass('events-configured');
+    uiHelper.configureButtonStyles('.verse-list-menu');
+  }
+
+  disableExportButton(tabIndex=undefined) {
+    if (tabIndex !== undefined) {
+      const currentVerseListMenu = app_controller.getCurrentVerseListMenu(tabIndex);
+      currentVerseListMenu.find('.export-docx-button').addClass('ui-state-disabled');
+    } else {
+      $('#export-docx-button').addClass('ui-state-disabled');
+    }
+  }
+
+  /**
+   * exports to Word
+   * @param {'NOTES'|'TAGS'} type 
+   */
+  async _runExport(type) {
+    /**@type {import('../../ui_models/tab')} */
+    const currentTab = app_controller.tab_controller.getTab();
+    const translationId = currentTab.getBibleTranslationId();
+
+    if (!(await swordHelper.isPublicDomain(translationId)) &amp;&amp; !(await agreeDisclaimerDialog(translationId))) {
+      return;
+    }
+    
+    var fileName;
+    var isInstantLoadingBook = false;
+
+
+    if (type === 'TAGS') {
+      fileName = getUnixTagTitleList(currentTab);
+    } else if (type === 'NOTES') {
+      isInstantLoadingBook = await app_controller.translation_controller.isInstantLoadingBook(translationId, currentTab.getBook());
+      fileName = currentTab.getBookTitle() + (isInstantLoadingBook ? '' : `_${currentTab.getChapter()}`);
+    } else {
+      console.log('Unrecognized export type:', type);
+      return;
+    }
+
+    exportController.showSaveDialog(fileName).then(filePath => {
+      if (filePath) {
+        if (type === 'TAGS') {
+          renderCurrentTagsForExport(currentTab);
+        } else if (type === 'NOTES') {
+          renderNotesForExport(currentTab, isInstantLoadingBook);
+        }
+      }
+    });
+  }
+  
+}
+
+module.exports = DocxExport;
+
+function renderCurrentTagsForExport(currentTab) {
+  const currentTagIdList = currentTab.getTagIdList();
+  
+  const currentTagTitleList = currentTab.getTagTitleList();
+  const title = `${i18n.t("tags.verses-tagged-with")} _${currentTagTitleList}_`;
+
+  app_controller.text_controller.requestVersesForSelectedTags(
+    undefined,
+    null,
+    currentTagIdList,
+    (verses, bibleBooks) => { 
+      exportController.saveWordDocument(title, verses, bibleBooks); 
+    },
+    'docx',
+    false
+  );
+}
+
+function renderNotesForExport(currentTab, isWholeBook=false) {
+  app_controller.text_controller.requestNotesForExport(
+    undefined,
+    currentTab.getBook(),
+    isWholeBook ? null : currentTab.getChapter(),
+    (verses, notes) => {
+      const title = currentTab.getBookTitle() + (isWholeBook ? '' : ` ${currentTab.getChapter()}`);
+      exportController.saveWordDocument(title, verses, undefined, notes);
+    },
+    'docx'
+  );
+}
+
+function getUnixTagTitleList(currentTab) {
+  var currentTagTitleList = currentTab.getTagTitleList();
+  var unixTagTitleList = currentTagTitleList.replace(/, /g, "__");
+  unixTagTitleList = unixTagTitleList.replace(/ /g, "_");
+
+  // Eliminate all special characters in the tag title list
+  var specialCharacters = /[',;:()[\]{}=+\-?/">&lt;|@*~#$%§!^°&amp;`]/g;
+  unixTagTitleList = unixTagTitleList.replace(specialCharacters, "");
+
+  return unixTagTitleList;
+}
+
+
+async function agreeDisclaimerDialog(moduleId) {
+
+  const module_name = `&lt;strong>${await swordHelper.getModuleFullName(moduleId)}&lt;/strong>`;
+  const copyright = await swordHelper.getModuleCopyright(moduleId);
+
+  const dialogBoxTemplate = html`
+  &lt;div id="module-disclaimer">
+    &lt;div id="module-disclaimer-content" style="margin-right: 0.5em;">
+      &lt;p>${i18n.t("general.module-copyright-intro", {module_name})}&lt;/p>
+      ${copyright ? `&lt;p class="external">${copyright}&lt;/p>` : ''}
+      &lt;details ${!copyright ? 'open' : ''} style="margin-left: 1em;">
+        &lt;summary>${i18n.t('general.more-info')}&lt;/summary>
+        ${await swordHelper.getModuleAbout(moduleId)}
+      &lt;/details>
+      &lt;p>${i18n.t("general.module-copyright-disclaimer", {module_name})}&lt;/p>
+    &lt;/div>
+  &lt;/div>
+  `;
+
+  return new Promise((resolve) => {
+
+    document.querySelector('#boxes').appendChild(dialogBoxTemplate.content);
+    const $dialogBox = $('#module-disclaimer');
+    
+    var agreed = false;
+    const width = 640;
+    const height = 360;
+    const offsetLeft = ($(window).width() - width)/2;
+
+    var buttons = {};
+    buttons[i18n.t('general.cancel')] = function() {
+      $(this).dialog('close');
+    };
+    buttons[i18n.t('general.ok')] = function() {
+      agreed = true;
+      $(this).dialog('close');
+    }
+  
+    $dialogBox.dialog({
+      width,
+      height,
+      position: [offsetLeft, 120],
+      title: i18n.t('general.module-copyright'),
+      resizable: false,
+      dialogClass: 'ezra-dialog',
+      buttons: buttons,
+      close() {
+        $dialogBox.dialog('destroy');
+        $dialogBox.remove();
+        resolve(agreed);
+      }
+    });
+  });
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

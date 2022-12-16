@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs TabSearch</title>
+  <title>Ezra Bible App Design Docs backend/db_sync/dropbox_content_hasher.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -93,156 +95,113 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Class</p>
-                    <h1>TabSearch</h1>
+                    <p>Source</p>
+                    <h1>backend/db_sync/dropbox_content_hasher.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>TabSearch<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description"><p>The TabSearch component implements the in-tab search functionality which is enabled with CTRL + f / CMD + f.</p></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class='vertical-section'>
-                <div class="members">
-                    <div class="member">
-                        <div class=name>
-                            <span class="tag">Constructor</span>
-                        </div>
-                        
-
-
-    
-    <h4 class="name" id="TabSearch">
-        <a class="href-link" href="#TabSearch">#</a>
-        
-        <span class="code-name">
-            
-                new TabSearch<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="frontend_components_tab_search_tab_search.js.html" class="button">View Source</a>
-            <span>
-                <a href="frontend_components_tab_search_tab_search.js.html">frontend/components/tab_search/tab_search.js</a>, <a href="frontend_components_tab_search_tab_search.js.html#line29">line 29</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// taken from https://github.com/dropbox/dropbox-api-content-hasher/blob/master/js-node/dropbox-content-hasher.js
+
+"use strict";
+
+/**
+ * Computes a hash using the same algorithm that the Dropbox API uses for the
+ * the "content_hash" metadata field.
+ *
+ * The `digest()` method returns a raw binary representation of the hash.
+ * The "content_hash" field in the Dropbox API is a hexadecimal-encoded version
+ * of the digest.
+ *
+ * Example:
+ *
+ *     const fs = require('fs');
+ *     const dch = require('dropbox-content-hasher');
+ *
+ *     const hasher = dch.create();
+ *     const f = fs.createReadStream('some-file');
+ *     f.on('data', function(buf) {
+ *       hasher.update(buf);
+ *     });
+ *     f.on('end', function(err) {
+ *       const hexDigest = hasher.digest('hex');
+ *       console.log(hexDigest);
+ *     });
+ *     f.on('error', function(err) {
+ *       console.error("Error reading from file: " + err);
+ *       process.exit(1);
+ *     });
+ */
+
+const crypto = require('crypto');
+
+const BLOCK_SIZE = 4 * 1024 * 1024;
+
+function DropboxContentHasher(overallHasher, blockHasher, blockPos) {
+  this._overallHasher = overallHasher;
+  this._blockHasher = blockHasher;
+  this._blockPos = blockPos;
+}
+
+DropboxContentHasher.prototype.update = function(data, inputEncoding) {
+  if (this._overallHasher === null) {
+    throw new Error(
+      "can't use this object anymore; you already called digest()");
+  }
+
+  if (!Buffer.isBuffer(data)) {
+    if (inputEncoding !== undefined &amp;&amp;
+        inputEncoding !== 'utf8' &amp;&amp; inputEncoding !== 'ascii' &amp;&amp; inputEncoding !== 'latin1') {
+      // The docs for the standard hashers say they only accept these three encodings.
+      throw new Error("Invalid 'inputEncoding': " + JSON.stringify(inputEncoding));
+    }
+    data = Buffer.from(data, inputEncoding);
+  }
+
+  let offset = 0;
+  while (offset &lt; data.length) {
+    if (this._blockPos === BLOCK_SIZE) {
+      this._overallHasher.update(this._blockHasher.digest());
+      this._blockHasher = crypto.createHash('sha256');
+      this._blockPos = 0;
+    }
+
+    let spaceInBlock = BLOCK_SIZE - this._blockPos;
+    let inputPartEnd = Math.min(data.length, offset+spaceInBlock);
+    let inputPartLength = inputPartEnd - offset;
+    this._blockHasher.update(data.slice(offset, inputPartEnd));
+
+    this._blockPos += inputPartLength;
+    offset = inputPartEnd;
+  }
+};
+
+DropboxContentHasher.prototype.digest = function(encoding) {
+  if (this._overallHasher === null) {
+    throw new Error(
+      "can't use this object anymore; you already called digest()");
+  }
+
+  if (this._blockPos > 0) {
+    this._overallHasher.update(this._blockHasher.digest());
+    this._blockHasher = null;
+  }
+  let r = this._overallHasher.digest(encoding);
+  this._overallHasher = null;  // Make sure we can't use this object anymore.
+  return r;
+};
+
+exports.BLOCK_SIZE = BLOCK_SIZE;
+exports.create = function() {
+  return new DropboxContentHasher(crypto.createHash('sha256'), crypto.createHash('sha256'), 0);
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

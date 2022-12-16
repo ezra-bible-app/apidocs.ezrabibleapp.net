@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ezra Bible App Design Docs TabSearch</title>
+  <title>Ezra Bible App Design Docs frontend/components/text_field.js</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -93,156 +95,133 @@
         <div class="core" id="main-content-wrapper">
             <div class="content">
                 <header class="page-title">
-                    <p>Class</p>
-                    <h1>TabSearch</h1>
+                    <p>Source</p>
+                    <h1>frontend/components/text_field.js</h1>
                 </header>
                 
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>TabSearch<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description"><p>The TabSearch component implements the in-tab search functionality which is enabled with CTRL + f / CMD + f.</p></div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class='vertical-section'>
-                <div class="members">
-                    <div class="member">
-                        <div class=name>
-                            <span class="tag">Constructor</span>
-                        </div>
-                        
-
-
-    
-    <h4 class="name" id="TabSearch">
-        <a class="href-link" href="#TabSearch">#</a>
-        
-        <span class="code-name">
-            
-                new TabSearch<span class="signature">()</span><span class="type-signature"></span>
-            
-        </span>
-    </h4>
-    
-
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    
-
-    
-
-    
-
-    
-        <p class="tag-source">
-            <a href="frontend_components_tab_search_tab_search.js.html" class="button">View Source</a>
-            <span>
-                <a href="frontend_components_tab_search_tab_search.js.html">frontend/components/tab_search/tab_search.js</a>, <a href="frontend_components_tab_search_tab_search.js.html#line29">line 29</a>
-            </span>
-        </p>
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-        
-    
-    </div>
-    
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
+
+   Copyright (C) 2019 - 2022 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+
+   Ezra Bible App is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Bible App is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Bible App. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+const eventController = require('../controllers/event_controller.js');
+const { html } = require('../helpers/ezra_helper.js');
+
+const template = html`
+
+&lt;!-- FONT AWESOME STYLES -->
+&lt;link rel="preload" href="node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2" as="font" type="font/woff2">
+&lt;link href="node_modules/@fortawesome/fontawesome-free/css/solid.min.css" rel="stylesheet" type="text/css" />
+&lt;link href="node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css" rel="stylesheet" type="text/css" />
+
+&lt;!-- JQUERY STYLES -->
+&lt;link id="theme-css" href="css/jquery-ui/cupertino/jquery-ui.css" media="screen" rel="stylesheet" type="text/css" />
+
+&lt;link href="css/main.css" media="screen" rel="stylesheet" type="text/css" />
+
+&lt;style>
+  :host {
+    display: inline-block;
+  }
+
+  #text-field {
+    width: 115%;
+  }
+
+  #input {
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    padding-right: 1.8em;
+    width: 65%;
+  }
+
+  #delete-button {
+    position: relative;
+    right: 25px;
+    color: var(--button-color);
+  }
+
+  #delete-button:hover {
+    color: var(--accent-color);
+    cursor: pointer;
+  }
+
+&lt;/style>
+ 
+&lt;div id="text-field">
+  &lt;input type="text" id="input" />
+  &lt;i id="delete-button" class="fa-solid fa-delete-left">&lt;/i>
+&lt;/div>
+`;
+
+/**
+ * The TextField component &lt;text-field>&lt;/text-field> is a more fancy version of the standard html input element.
+ * It adds some styling as well as a delete button that can be used to delete the content of the text field.
+ */
+class TextField extends HTMLElement {
+  constructor() {
+    super();
+
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
+
+    this.input = this.shadowRoot.getElementById('input');
+    this.deleteButton = this.shadowRoot.getElementById('delete-button');
+
+    this.deleteButton.addEventListener('click', () => {
+      this.input.value = '';
+      this.dispatchEvent(new KeyboardEvent('keyup'));
+      this.input.focus();
+    });
+  }
+
+  connectedCallback() {
+    eventController.subscribe('on-theme-changed', (theme) => {
+      if (theme == 'dark') {
+        uiHelper.switchToDarkTheme(this.shadowRoot, 'text-field');
+      } else {
+        uiHelper.switchToRegularTheme(this.shadowRoot, 'text-field');
+      }
+    });
+  }
+
+  set value(value) {
+    this.input.value = value;
+  }
+
+  get value() {
+    return this.input.value;
+  }
+  
+  select() {
+    this.input.select();
+  }
+}
+
+customElements.define('text-field', TextField);
+module.exports = TextField;
+</code></pre>
+        </article>
+    </section>
 
 
 

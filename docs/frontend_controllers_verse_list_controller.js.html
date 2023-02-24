@@ -107,7 +107,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
 
-   Copyright (C) 2019 - 2022 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+   Copyright (C) 2019 - 2023 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
 
    Ezra Bible App is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -188,14 +188,30 @@ module.exports.getCurrentVerseListHeader = function(tabIndex=undefined) {
 };
 
 module.exports.getCurrentSearchProgressBar = function(tabIndex=undefined) {
-  var currentVerseListFrame = this.getCurrentVerseListFrame(tabIndex);
-  var searchProgressBar = currentVerseListFrame.find('.search-progress-bar');
+  const showSearchResultsInPopup = app_controller.optionsMenu._showSearchResultsInPopupOption.isChecked;
+  var parentElement = null;
+  
+  if (showSearchResultsInPopup) {
+    parentElement = $('#search-results-box');
+  } else {
+    parentElement = this.getCurrentVerseListFrame(tabIndex);
+  }
+
+  var searchProgressBar = parentElement.find('.search-progress-bar');
   return searchProgressBar;
 };
 
 module.exports.getCurrentSearchCancelButtonContainer = function(tabIndex=undefined) {
-  var currentVerseListFrame = this.getCurrentVerseListFrame(tabIndex);
-  var searchCancelButton = currentVerseListFrame.find('.cancel-module-search-button-container');
+  const showSearchResultsInPopup = app_controller.optionsMenu._showSearchResultsInPopupOption.isChecked;
+  var parentElement = null;
+
+  if (showSearchResultsInPopup) {
+    parentElement = $('#search-results-box');
+  } else {
+    parentElement = this.getCurrentVerseListFrame(tabIndex);
+  }
+
+  var searchCancelButton = parentElement.find('.cancel-module-search-button-container');
   return searchCancelButton;
 };
 

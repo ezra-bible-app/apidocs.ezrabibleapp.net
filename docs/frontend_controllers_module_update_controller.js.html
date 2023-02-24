@@ -107,7 +107,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
 
-   Copyright (C) 2019 - 2022 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+   Copyright (C) 2019 - 2023 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
 
    Ezra Bible App is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -125,6 +125,7 @@
 
 const eventController = require('../controllers/event_controller.js');
 const { html } = require('../helpers/ezra_helper.js');
+const swordModuleHelper = require('../helpers/sword_module_helper.js');
 
 /**
  * This controller manages the update of SWORD modules. 
@@ -151,13 +152,42 @@ module.exports.init = function() {
 
 module.exports.showModuleUpdateDialog = async function() {
   const dialogBoxTemplate = html`
-  &lt;div id="module-update-dialog">
-    &lt;div id="module-update-dialog-content" style="padding-top: 0.5em">
 
+  &lt;link href="css/module_settings_assistant.css" media="screen" rel="stylesheet" type="text/css" />
+
+  &lt;div id="module-update-dialog" class="module-settings-assistant">
+    &lt;div id="module-update-dialog-content" class="container" style="padding-top: 0.5em">
+
+      &lt;div id="module-update-step-1" class="module-settings-assistant-init">
+        &lt;section>
+          &lt;p i18n="[html]module-assistant.intro-text"
+             data-i18n-options='{ "module_type" : "$t(module-assistant.module-type-generic)" }'>&lt;/p>
+          &lt;p class="repository-explanation assistant-note"
+             i18n="[html]module-assistant.step-repositories.what-is-repository"
+             data-i18n-options='{ "module_type" : "$t(module-assistant.module-type-generic)" }'>&lt;/p>
+        &lt;/section>
+
+        &lt;section class="module-settings-assistant-internet-usage">
+          &lt;p i18n="[html]module-assistant.internet-usage-note">&lt;/p>
+        &lt;/section>
+
+        &lt;div class="module-assistant-type-buttons">
+          &lt;button id="update-modules-button"
+                  class="fg-button ui-corner-all ui-state-default"
+                  i18n="module-assistant.update-modules"
+                  data-i18n-options='{ "module_type" : "$t(module-assistant.module-type-generic)" }'>&lt;/button>
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
+  &lt;/div>
+  `;
+
+  const dialogBoxTemplateStep2 = html`
+    &lt;div id="module-update-step-2">
       &lt;update-repositories>&lt;/update-repositories>
 
-      &lt;p id="module-update-header" style="margin-top: 1em; float: left;" i18n="general.module-updates-available">&lt;/p>
-      &lt;p id="module-update-header-up-to-date" style="display: none; margin-top: 1em; float: left;" i18n="general.modules-up-to-date">&lt;/p>
+      &lt;p id="module-update-header" style="display: none; margin-top: 1em; float: left;" i18n="general.module-updates-available">&lt;/p>
+      &lt;p id="module-update-header-up-to-date" style="display: none; margin-top: 4em; float: left; text-align: center; width: 100%;" i18n="general.modules-up-to-date">&lt;/p>
       &lt;loading-indicator id="module-update-loading-indicator" style="display: none; float: right;">&lt;/loading-indicator>
 
       &lt;table id="module-update-list" style="clear: both; display: none;">
@@ -173,7 +203,6 @@ module.exports.showModuleUpdateDialog = async function() {
         &lt;/tbody>
       &lt;/table>
     &lt;/div>
-  &lt;/div>
   `;
 
   moduleUpdateInitiated = false;
@@ -184,12 +213,23 @@ module.exports.showModuleUpdateDialog = async function() {
     const $dialogBox = $('#module-update-dialog');
     $dialogBox.localize();
 
-    var confirmed = false;
-    const width = 800;
-    const height = 600;
-    const offsetLeft = ($(window).width() - width)/2;
+    uiHelper.configureButtonStyles('#module-update-step-1');
 
-    let dialogOptions = uiHelper.getDialogOptions(width, height, false, [offsetLeft, 120]);
+    const appContainerWidth = $(window).width() - 10;
+    var dialogWidth = null;
+
+    if (appContainerWidth &lt; 1100) {
+      dialogWidth = appContainerWidth;
+    } else {
+      dialogWidth = 1100;
+    }
+
+    var dialogHeight = $(window).height() * 0.75;
+
+    var confirmed = false;
+    const offsetLeft = ($(window).width() - dialogWidth)/2;
+
+    let dialogOptions = uiHelper.getDialogOptions(dialogWidth, dialogHeight, false, [offsetLeft, 120]);
     dialogOptions.dialogClass = 'ezra-dialog module-update-dialog';
     dialogOptions.title = i18n.t('general.update-modules');
     dialogOptions.draggable = true;
@@ -201,31 +241,41 @@ module.exports.showModuleUpdateDialog = async function() {
       resolve(confirmed);
     };
 
-    dialogOptions.buttons[i18n.t('general.update')] = function(event) {
-      if (event.target.classList.contains('ui-state-disabled')) {
-        return;
-      }
-
-      performModuleUpdate();
-      confirmed = true;
-    };
-
-    dialogOptions.buttons[i18n.t('general.cancel')] = function() {
-      if (!moduleUpdateInitiated || moduleUpdateCompleted) {
-        $dialogBox.dialog('destroy');
-        $dialogBox.remove();
-        resolve(confirmed);
-      }
-    };
-
-    if (!repoUpdateInProgress) {
-      refreshUpdatedModuleList();
-    }
-  
     $dialogBox.dialog(dialogOptions);
     uiHelper.fixDialogCloseIconOnAndroid('module-update-dialog');
 
-    disableDialogButtons();
+    document.getElementById('update-modules-button').addEventListener('click', () => {
+      let dialogContent = document.getElementById('module-update-dialog-content');
+      dialogContent.innerHTML = dialogBoxTemplateStep2.innerHTML;
+      $dialogBox.localize();
+
+      let buttons = {};
+
+      buttons[i18n.t('general.update')] = function(event) {
+        if (event.target.closest('button').classList.contains('ui-state-disabled')) {
+          return;
+        }
+
+        performModuleUpdate();
+        confirmed = true;
+      };
+
+      buttons[i18n.t('general.cancel')] = function() {
+        if (!moduleUpdateInitiated || moduleUpdateCompleted) {
+          $dialogBox.dialog('destroy');
+          $dialogBox.remove();
+          resolve(confirmed);
+        }
+      };
+
+      $dialogBox.dialog("option", "buttons", buttons);
+
+      if (!repoUpdateInProgress) {
+        refreshUpdatedModuleList();
+      }
+
+      disableDialogButtons();
+    });
   });
 };
 
@@ -302,16 +352,26 @@ function disableDialogButtons() {
   let moduleUpdateDialog = document.querySelector('.module-update-dialog');
 
   if (moduleUpdateDialog != null) {
-    let dialogButtons = moduleUpdateDialog.querySelector('.ui-dialog-buttonset').querySelectorAll('button');
-    let updateButton = dialogButtons[0];
-    let cancelButton = dialogButtons[1];
+    let buttonSet = moduleUpdateDialog.querySelector('.ui-dialog-buttonset');
+
+    if (buttonSet != null) {
+      let dialogButtons = buttonSet.querySelectorAll('button');
+      let updateButton = dialogButtons[0];
+      let cancelButton = dialogButtons[1];
+      updateButton.classList.add('ui-state-disabled');
+      cancelButton.classList.add('ui-state-disabled');
+    }
+
     let dialogCloseButton = moduleUpdateDialog.querySelector('.ui-dialog-titlebar-close');
     let updateRepoDataButton = moduleUpdateDialog.querySelector('.update-repo-data');
 
-    updateButton.classList.add('ui-state-disabled');
-    cancelButton.classList.add('ui-state-disabled');
-    updateRepoDataButton.classList.add('ui-state-disabled');
-    dialogCloseButton.style.display = 'none';
+    if (updateRepoDataButton != null) {
+      updateRepoDataButton.classList.add('ui-state-disabled');
+    }
+
+    if (dialogCloseButton != null) {
+      dialogCloseButton.style.display = 'none';
+    }
   }
 }
 
@@ -402,6 +462,10 @@ async function performModuleUpdate() {
   }
 
   moduleUpdateCompleted = true;
+
+  // The sword module helper may still have a cached version of one of the upgraded modules.
+  // Therefore it is important to reset it.
+  swordModuleHelper.resetModuleCache();
 
   enableDialogCloseButton();
   enableFinishButton();

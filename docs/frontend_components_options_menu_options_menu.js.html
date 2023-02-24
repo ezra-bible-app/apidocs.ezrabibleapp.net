@@ -107,7 +107,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
 
-   Copyright (C) 2019 - 2022 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+   Copyright (C) 2019 - 2023 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
 
    Ezra Bible App is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -179,6 +179,7 @@ class OptionsMenu {
     });
 
     var openVerseListsInNewTabByDefault = false;
+    var showSearchResultsInPopupByDefault = false;
     var bookChapterNavDefault = true;
     var userDataIndicatorDefault = true;
 
@@ -187,6 +188,7 @@ class OptionsMenu {
     }
 
     if (this.platformHelper.isMobile()) {
+      showSearchResultsInPopupByDefault = true;
       bookChapterNavDefault = false;
       userDataIndicatorDefault = false;
     }
@@ -201,6 +203,7 @@ class OptionsMenu {
     this._headerNavOption = this.initConfigOption('showHeaderNavigationOption', () => { this.showOrHideHeaderNavigationBasedOnOption(); });
     this._tabSearchOption = this.initConfigOption('showTabSearchOption', () => { this.showOrHideTabSearchFormBasedOnOption(undefined, true); });
     this._verseListNewTabOption = this.initConfigOption('openVerseListsInNewTabOption', () => {}, openVerseListsInNewTabByDefault);
+    this._showSearchResultsInPopupOption = this.initConfigOption('showSearchResultsInPopupOption', () => {}, showSearchResultsInPopupByDefault);
     this._userDataIndicatorOption = this.initConfigOption('showUserDataIndicatorOption', () => { this.showOrHideUserDataIndicatorsBasedOnOption(); }, userDataIndicatorDefault);
     this._tagsOption = this.initConfigOption('showTagsOption', () => { this.showOrHideVerseTagsBasedOnOption(); });
     this._tagGroupFilterOption = this.initConfigOption('useTagGroupFilterOption', () => { this.applyTagGroupFilterBasedOnOption(); });

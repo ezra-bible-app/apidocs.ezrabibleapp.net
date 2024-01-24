@@ -1,0 +1,681 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ezra Bible App Design Docs frontend/components/tool_panel/dictionary_info_box.js</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="style.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">Ezra Bible App Design Documentation</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/ezra-bible-app/ezra-bible-app"
+                        >
+                            GitHub repo
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://ezrabibleapp.net"
+                        >
+                            Project website
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="CordovaPlatform.html">CordovaPlatform</a></li><li><a href="ElectronPlatform.html">ElectronPlatform</a></li><li><a href="HierarchicalObjectCache.html">HierarchicalObjectCache</a></li><li><a href="ItemListManager.html">ItemListManager</a></li><li><a href="TagGroupAssignmentList.html">TagGroupAssignmentList</a></li><li><a href="TagGroupList.html">TagGroupList</a></li><li><a href="TagGroupManager.html">TagGroupManager</a></li><li><a href="TagList.html">TagList</a></li><li><a href="TagListMenu.html">TagListMenu</a></li><li><a href="TagManager.html">TagManager</a></li><li><a href="TextField.html">TextField</a></li></ul><h3>Global</h3><ul><li><a href="global.html#clearLongPressTimer">clearLongPressTimer</a></li><li><a href="global.html#crypto">crypto</a></li><li><a href="global.html#getCachedItem">getCachedItem</a></li><li><a href="global.html#getLanguageCode">getLanguageCode</a></li><li><a href="global.html#handleTouchMove">handleTouchMove</a></li><li><a href="global.html#listCheckboxSection">listCheckboxSection</a></li><li><a href="global.html#startTimer">startTimer</a></li><li><a href="global.html#subscribe">subscribe</a></li></ul></div><div class="category"><h2>Component</h2><h3>Modules</h3><ul><li><a href="module-ModuleAssistant.html">ModuleAssistant</a></li><li><a href="module-StepLanguages.html">StepLanguages</a></li><li><a href="module-StepModules.html">StepModules</a></li><li><a href="module-StepModulesRemove.html">StepModulesRemove</a></li><li><a href="module-StepRepositories.html">StepRepositories</a></li></ul><h3>Classes</h3><ul><li><a href="AssignLastTagButton.html">AssignLastTagButton</a></li><li><a href="BookSelectionMenu.html">BookSelectionMenu</a></li><li><a href="CommentaryPanel.html">CommentaryPanel</a></li><li><a href="DictionaryInfoBox.html">DictionaryInfoBox</a></li><li><a href="DocxExport.html">DocxExport</a></li><li><a href="EmojiButtonTrigger.html">EmojiButtonTrigger</a></li><li><a href="NavigationPane.html">NavigationPane</a></li><li><a href="OptionsMenu.html">OptionsMenu</a></li><li><a href="SwordNotes.html">SwordNotes</a></li><li><a href="TabSearch.html">TabSearch</a></li><li><a href="TagListFilter.html">TagListFilter</a></li><li><a href="TagSelectionMenu.html">TagSelectionMenu</a></li><li><a href="TextSizeSettings.html">TextSizeSettings</a></li><li><a href="TranslationComparison.html">TranslationComparison</a></li><li><a href="VerseListPopup.html">VerseListPopup</a></li><li><a href="VerseSelection.html">VerseSelection</a></li><li><a href="VerseStatisticsChart.html">VerseStatisticsChart</a></li></ul></div><div class="category"><h2>Controller</h2><h3>Modules</h3><ul><li><a href="module-dbSyncController.html">dbSyncController</a></li><li><a href="module-eventController.html">eventController</a></li><li><a href="module-fullscreenController.html">fullscreenController</a></li><li><a href="module-i18nController.html">i18nController</a></li><li><a href="module-moduleUpdateController.html">moduleUpdateController</a></li><li><a href="module-referenceVerseController.html">referenceVerseController</a></li><li><a href="module-verseListController.html">verseListController</a></li><li><a href="module-wheelnavController.html">wheelnavController</a></li></ul><h3>Classes</h3><ul><li><a href="AppController.html">AppController</a></li><li><a href="DictionaryController.html">DictionaryController</a></li><li><a href="ModuleSearchController.html">ModuleSearchController</a></li><li><a href="NotesController.html">NotesController</a></li><li><a href="TabController.html">TabController</a></li><li><a href="TagsController.html">TagsController</a></li><li><a href="TextController.html">TextController</a></li><li><a href="ThemeController.html">ThemeController</a></li><li><a href="TranslationController.html">TranslationController</a></li></ul><h3>Global</h3><ul><li><a href="global.html#generateDocument">generateDocument</a></li><li><a href="global.html#saveWordDocument">saveWordDocument</a></li></ul></div><div class="category"><h2>Helper</h2><h3>Modules</h3><ul><li><a href="module-sword_module_helper.html">sword_module_helper</a></li><li><a href="module-verse_list_title_helper.html">verse_list_title_helper</a></li></ul></div><div class="category"><h2>Model</h2><h3><a href="global.html">Global</a></h3></div><div class="category"><h2>Startup</h2><h3>Modules</h3><ul><li><a href="module-ezra_init.html">ezra_init</a></li><li><a href="module-platform_init.html">platform_init</a></li></ul><h3>Classes</h3><ul><li><a href="Startup.html">Startup</a></li></ul></div><div class="category"><h2>Utility</h2><h3>Modules</h3><ul><li><a href="module-emojiHelper.html">emojiHelper</a></li><li><a href="module-ezraHelper.html">ezraHelper</a></li><li><a href="module-fsHelper.html">fsHelper</a></li><li><a href="module-i18NHelper.html">i18NHelper</a></li><li><a href="module-languageMapper.html">languageMapper</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>frontend/components/tool_panel/dictionary_info_box.js</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* This file is part of Ezra Bible App.
+
+   Copyright (C) 2019 - 2023 Ezra Bible App Development Team &lt;contact@ezrabibleapp.net>
+
+   Ezra Bible App is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 2 of the License, or
+   (at your option) any later version.
+
+   Ezra Bible App is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with Ezra Bible App. See the file LICENSE.
+   If not, see &lt;http://www.gnu.org/licenses/>. */
+
+const eventController = require('../../controllers/event_controller.js');
+const { html } = require('../../helpers/ezra_helper.js');
+
+let jsStrongs = null;
+
+/**
+ * The DictionaryInfoBox component handles all event handling and updates of the
+ * dictionary info box component.
+ * 
+ * @category Component
+ */
+class DictionaryInfoBox {
+  constructor(dictionaryController) {
+    this.dictionaryController = dictionaryController;
+    this.infoBox = $('#dictionary-panel');
+    this.dictionaryInfoBoxPanel = $('#dictionary-panel-wrapper');
+    this.dictionaryInfoBoxHeader = $('#dictionary-panel-header');
+    this.dictionaryInfoBoxHelp = $('#dictionary-panel-help');
+    this.dictionaryInfoBoxContent = $('#dictionary-panel-content');
+    this.dictionaryInfoBoxBreadcrumbs = $('#dictionary-panel-breadcrumbs');
+    this.dictionaryInfoBoxStack = [];
+    this.currentStrongsEntry = null;
+    this.currentFirstStrongsEntry = null;
+    this.currentAdditionalStrongsEntries = [];
+    this.currentLemma = null;
+
+    eventController.subscribe('on-locale-changed', () => {
+      if (this.currentStrongsEntry == null) {
+        this.clearDictInfoBox();
+      }
+    });
+
+    this.clearDictInfoBox();
+  }
+
+  getJsStrongs() {
+    if (jsStrongs == null) {
+      jsStrongs = require('strongs');
+    }
+
+    return jsStrongs;
+  }
+
+  clearDictInfoBox() {
+    this.currentStrongsEntry = null;
+
+    var strongsAvailable = this.dictionaryController.strongsAvailable;
+    var dictionaryInstallStatus = i18n.t("general.installed");
+    var dictionaryInstallStatusClass = 'dict-installed';
+
+    if (!strongsAvailable) {
+      dictionaryInstallStatus = i18n.t("general.not-installed");
+      dictionaryInstallStatusClass = "dict-not-installed";
+    }
+
+    this.dictionaryInfoBoxPanel.find('div').empty();
+    this.dictionaryInfoBoxHeader[0].innerHTML = i18n.t("dictionary-panel.default-header",
+                                                       { interpolation: {escapeValue: false} });
+
+    let helpInstructionPart1 = i18n.t("dictionary-panel.help-instruction-part1", {
+      install_status_class: dictionaryInstallStatusClass,
+      install_status: dictionaryInstallStatus,
+      interpolation: {escapeValue: false}
+    });
+
+    let helpInstructionPart2 = i18n.t("dictionary-panel.help-instruction-part2");
+    let helpInstructionPart3 = "";
+    let helpInstructionPart4 = "";
+   
+    if (platformHelper.isCordova()) {
+      helpInstructionPart3 = i18n.t("dictionary-panel.help-instruction-part3-cordova");
+    } else {
+      helpInstructionPart3 = i18n.t("dictionary-panel.help-instruction-part3");
+      helpInstructionPart4 = `&lt;li>${i18n.t("dictionary-panel.help-instruction-part4-desktop")}&lt;/li>`;
+    }
+    
+    let helpInstruction = html`
+      &lt;p>${i18n.t("dictionary-panel.help-instruction-intro")}&lt;/p>
+      &lt;ol>
+        &lt;li>${helpInstructionPart1}&lt;/li>
+        &lt;li>${helpInstructionPart2}&lt;/li>
+        &lt;li>${helpInstructionPart3}&lt;/li>
+        ${helpInstructionPart4}
+      &lt;/ol>
+    `;
+
+    this.dictionaryInfoBoxHelp[0].innerHTML = helpInstruction.innerHTML;
+    this.dictionaryInfoBoxHelp[0].style.display = 'block';
+  }
+
+  async updateDictInfoBox(strongsEntry, additionalStrongsEntries=[], firstUpdate=false) {
+    if (strongsEntry == null) {
+      return;
+    }
+
+    var jsStrongsEntry = this.getJsStrongs()[strongsEntry.key];
+    if (jsStrongsEntry == null) {
+      return;
+    }
+
+    if (firstUpdate) {
+      this.dictionaryInfoBoxStack = [ strongsEntry.rawKey ];
+    }
+
+    this.currentStrongsEntry = strongsEntry;
+    this.currentAdditionalStrongsEntries = additionalStrongsEntries;
+    this.currentLemma = jsStrongsEntry.lemma;
+
+    var dictInfoHeader = this.getDictInfoHeader(strongsEntry);
+    this.dictionaryInfoBoxHeader.html(dictInfoHeader);
+    this.dictionaryInfoBoxHelp.hide();
+    this.dictionaryInfoBoxBreadcrumbs.html(this.getCurrentDictInfoBreadcrumbs(additionalStrongsEntries));
+
+    let extendedStrongsInfo = await this.getExtendedStrongsInfo(strongsEntry, this.currentLemma);
+
+    this.dictionaryInfoBoxContent.html(extendedStrongsInfo);
+
+    // Replace sword:// links with plain text
+    this.dictionaryInfoBoxContent.find('a').each((index, aElement) => {
+      var currentA = $(aElement);
+      if (currentA.prop('href').indexOf('sword') != -1) {
+        currentA.replaceWith(currentA.text());
+      }
+    });
+
+    uiHelper.configureButtonStyles(this.dictionaryInfoBoxContent[0]);
+
+    let moduleInfoButtons = this.dictionaryInfoBoxContent[0].querySelectorAll('.module-info-button');
+    moduleInfoButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        this.handleModuleInfoButtonClick(event);
+      });
+    });
+  }
+
+  handleModuleInfoButtonClick(event) {
+    let moduleCode = event.target.closest('.module-info-button').getAttribute('module');
+    app_controller.info_popup.showAppInfo(moduleCode);
+  }
+
+  getAlternativeStrongsLink(strongsKey) {
+    var functionCall = `app_controller.dictionary_controller._dictionaryInfoBox.updateDictInfoBoxWithKey("${strongsKey}")`;
+    var currentLink = `&lt;a href='javascript:${functionCall}'>${strongsKey}&lt;/a>`;
+    return currentLink;
+  }
+
+  getBreadCrumbEntry(strongsEntry) {
+    var breadCrumbEntry = "";
+
+    if (strongsEntry.rawKey == this.currentStrongsEntry.rawKey) {
+      breadCrumbEntry = this.currentStrongsEntry.rawKey;
+    } else {
+      breadCrumbEntry = this.getAlternativeStrongsLink(strongsEntry.rawKey);
+    }
+
+    return breadCrumbEntry;
+  }
+
+  getAdditionalStrongsEntryLinks(additionalStrongsEntries) {
+    var additionalStrongsLinks = "";
+
+    if (additionalStrongsEntries.length > 0) {
+      for (var i = 0;  i &lt; additionalStrongsEntries.length; i++) {
+        additionalStrongsLinks += ' | ';
+
+        var breadCrumbEntry = this.getBreadCrumbEntry(additionalStrongsEntries[i]);
+
+        if (this.dictionaryInfoBoxStack.length == 1) {
+          breadCrumbEntry = "&lt;b>" + breadCrumbEntry + "&lt;/b>";
+        }
+
+        additionalStrongsLinks += breadCrumbEntry;
+      }
+    }
+
+    return additionalStrongsLinks;
+  }
+
+  getCurrentDictInfoBreadcrumbs(additionalStrongsEntries=[]) {
+    var crumbArray = [];
+    var additionalStrongsLinks = this.getAdditionalStrongsEntryLinks(additionalStrongsEntries);
+
+    for (var i = 0; i &lt; this.dictionaryInfoBoxStack.length; i++) {
+      let currentCrumb;
+      if (i &lt; this.dictionaryInfoBoxStack.length - 1) {
+        const currentRewindNumber = this.dictionaryInfoBoxStack.length - i - 1;
+        currentCrumb = "&lt;a href='javascript:app_controller.dictionary_controller._dictionaryInfoBox.rewindDictInfo(" + currentRewindNumber + ")'>";
+
+        if (i == 0) {
+          currentCrumb += this.currentFirstStrongsEntry.rawKey;
+        } else {
+          currentCrumb += this.dictionaryInfoBoxStack[i];
+        }
+
+        currentCrumb += "&lt;/a>";
+      } else {
+        if (this.dictionaryInfoBoxStack[i] == this.currentStrongsEntry.rawKey) {
+          currentCrumb = "&lt;b>" + this.dictionaryInfoBoxStack[i] + "&lt;/b>";
+        } else {
+          currentCrumb = "&lt;b>" + this.getAlternativeStrongsLink(this.dictionaryInfoBoxStack[i]) + "&lt;/b>";
+        }
+      }
+
+      if (i == 0 &amp;&amp; this.dictionaryInfoBoxStack.length == 1) {
+        currentCrumb += additionalStrongsLinks;
+      }
+
+      crumbArray.push(currentCrumb);
+    }
+
+    return crumbArray.join(' &amp;rarr; ');
+  }
+
+  async rewindDictInfo(rewindNumber) {
+    for (var i = 0; i &lt; rewindNumber; i++) {
+      this.dictionaryInfoBoxStack.pop();
+
+      var key = null;
+
+      if (this.dictionaryInfoBoxStack.length >= 2) {
+        key = this.dictionaryInfoBoxStack[this.dictionaryInfoBoxStack.length - 1];
+      } else {
+        key = this.currentFirstStrongsEntry.rawKey;
+      }
+
+      this.currentStrongsEntry = await this.dictionaryController.getStrongsEntryWithRawKey(key);
+      this.currentLemma = this.getJsStrongs()[this.currentStrongsEntry.key].lemma;
+    }
+
+    await this.updateDictInfoBox(this.currentStrongsEntry, this.currentAdditionalStrongsEntries);
+  }
+
+  async updateDictInfoBoxWithKey(strongsKey) {
+    var strongsEntry = await this.dictionaryController.getStrongsEntryWithRawKey(strongsKey);
+
+    if (strongsEntry == null) {
+      console.log("DictionaryInfoBox.updateDictInfoBoxWithKey: Got null strongsEntry for key " + strongsKey);
+      console.log("Cannot update dict info box!");
+      return;
+    }
+
+    // Remove existing entries from dictionaryInfoBoxStack
+    while (this.dictionaryInfoBoxStack.length > 1) {
+      this.dictionaryInfoBoxStack.pop();
+    }
+
+    await this.updateDictInfoBox(strongsEntry, this.currentAdditionalStrongsEntries);
+  }
+
+  getDictInfoHeader(strongsEntry) {
+    var infoHeader = "";
+    var languageDict;
+
+    if (strongsEntry.key[0] == 'G') {
+      languageDict = i18n.t('dictionary-panel.greek-dict');
+    } else {
+      languageDict = i18n.t('dictionary-panel.hebrew-dict');
+    }
+
+    infoHeader += "&lt;b>" + languageDict + "&lt;/b>";
+    return infoHeader;
+  }
+
+  getShortInfo(strongsEntry, lemma) {
+    return `${strongsEntry.transcription} &amp;mdash; ${strongsEntry.phoneticTranscription} &amp;mdash; ${lemma}`;
+  }
+
+  getFindAllLink(strongsEntry) {
+    var currentBibleTranslationId = app_controller.tab_controller.getTab().getBibleTranslationId();
+    var functionCall = "javascript:app_controller.dictionary_controller._dictionaryInfoBox.findAllOccurrences('" +
+      strongsEntry.rawKey + "','" + currentBibleTranslationId + "')";
+
+    var link = "&lt;a href=\"" + functionCall + "\">" + 
+               i18n.t("dictionary-panel.find-all-occurrences") + 
+               "&lt;/a>";
+    return link;
+  }
+
+  getBlueletterLink(strongsEntry) {
+    var bible = app_controller.tab_controller.getTab().getBibleTranslationId();
+
+    var blueLetterTranslations = ['KJV', 'NASB', 'ASV', 'WEB'];
+    if (!blueLetterTranslations.includes(bible)) {
+      bible = 'KJV';
+    } else if (bible === 'NASB') {
+      bible = 'NASB20'; // There are two versions NASB1995 and NASB2020 on BLB
+    }
+
+
+    var blueLetterLink = `https://www.blueletterbible.org/lang/lexicon/lexicon.cfm?Strongs=${strongsEntry.key}&amp;t=${bible}`;
+    var blueLetterLinkText = i18n.t("dictionary-panel.open-in-blueletter");
+    var htmlBlueLetterLink = `&lt;a class='external' href='${blueLetterLink}'>${blueLetterLinkText}&lt;/a>`;
+    return htmlBlueLetterLink;
+  }
+
+  async getStrongsReferenceTableRow(strongsReference, isLastRow=false) {
+    var referenceTableRow = "";
+    var referenceKey = strongsReference.key;
+    var referenceStrongsEntry = null;
+
+    try {
+      referenceStrongsEntry = await ipcNsi.getStrongsEntry(referenceKey);
+    } catch (e) {
+      console.log("DictionaryInfoBox.getStrongsReferenceTableRow: Could not get strongs entry for key " + referenceKey);
+      return null;
+    }
+    
+    var jsStrongsEntry = this.getJsStrongs()[referenceKey];
+    if (jsStrongsEntry == null) {
+      return null;
+    }
+
+    var referenceStrongsLemma = jsStrongsEntry.lemma;
+
+    var referenceLink = "&lt;a href=\"javascript:app_controller.dictionary_controller._dictionaryInfoBox.openStrongsReference('";
+    referenceLink += referenceKey;
+    referenceLink += "')\">" + referenceKey + "&lt;/a>";
+    var trClass = (isLastRow ? "" : "class='td-underline'");
+
+    referenceTableRow += "&lt;tr + " + trClass + ">" +
+                         "&lt;td>" + referenceLink + "&lt;/td>" + 
+                         "&lt;td>" + referenceStrongsEntry.transcription + "&lt;/td>" +
+                         "&lt;td>" + referenceStrongsEntry.phoneticTranscription + "&lt;/td>" + 
+                         "&lt;td>" + referenceStrongsLemma + "&lt;/td>" +
+                         "&lt;/tr>";
+
+    return referenceTableRow;
+  }
+
+  async getExtendedStrongsInfo(strongsEntry, lemma) {
+
+    let lang = "";
+    let moduleCode = "";
+
+    if (strongsEntry.key[0] == 'G') {
+      lang = 'GREEK';
+      moduleCode = 'StrongsGreek';
+    } else if (strongsEntry.key[0] == 'H') {
+      lang = 'HEBREW';
+      moduleCode = 'StrongsHebrew';
+    }
+
+    let extraDictContent = await this.getExtraDictionaryContent(lang, strongsEntry);
+    let relatedStrongsContent = await this.getRelatedStrongsContent(strongsEntry.references);
+    
+    const moduleInfoButtonTitle = i18n.t('menu.show-module-info');
+    let moduleInfoButton = this.getModuleInfoButton(moduleInfoButtonTitle, moduleCode);
+
+    let extendedStrongsInfo = `
+      &lt;b>${this.getShortInfo(strongsEntry, lemma)}&lt;/b>
+      &lt;p>${this.getFindAllLink(strongsEntry)} | ${this.getBlueletterLink(strongsEntry)}&lt;/p>
+      ${extraDictContent}
+      &lt;div class='bold' style='margin-bottom: 1em'>Strong's
+      ${moduleInfoButton} 
+      &lt;/div>
+      &lt;div class='strongs-definition'>${strongsEntry.definition}&lt;/div>
+      ${relatedStrongsContent}`;
+
+    return extendedStrongsInfo;
+  }
+
+  async getRelatedStrongsContent(strongsReferences) {
+    if (!strongsReferences.length) {
+      return '';
+    }
+
+    var relatedStrongsRows = (await Promise.all(strongsReferences.map(async (ref, i) => {
+      const isLast = i == (strongsReferences.length - 1);
+      return await this.getStrongsReferenceTableRow(ref, isLast);
+    }))).join('');
+
+    const relatedStrongsContent = `
+      &lt;hr/>
+      &lt;b>${i18n.t("dictionary-panel.related-strongs")}:&lt;/b>&lt;br/>
+      &lt;table class="strongs-refs">
+      ${relatedStrongsRows}
+      &lt;/table>`;
+
+    return relatedStrongsContent;
+  }
+
+  async openStrongsReference(key) {
+    if (key == "" || key == null) {
+      return;
+    } else {
+      try {
+        var previousIndex = this.dictionaryInfoBoxStack.length - 2;
+        var previousKey = null;
+
+        if (previousIndex == 0) {
+          previousKey = this.currentFirstStrongsEntry.rawKey;
+        } else {
+          previousKey = this.dictionaryInfoBoxStack[previousIndex];
+        }
+
+        if (this.dictionaryInfoBoxStack.length >= 2 &amp;&amp; previousKey == key) {
+
+          // If the last element of the stack is the one that we want to navigate to ... just pop the stack
+          this.rewindDictInfo(1);
+
+        } else {
+          // Otherwise push on the stack
+
+          var strongsEntry = await this.dictionaryController.getStrongsEntryWithRawKey(key);
+
+          if (strongsEntry == null) {
+            console.log("DictionaryInfoBox.openStrongsReference: Got null strongsEntry for key " + key);
+            console.log("Cannot update dict info box!");
+            return;
+          }
+
+          if (this.dictionaryInfoBoxStack.length == 1) {
+            this.currentFirstStrongsEntry = this.currentStrongsEntry;
+          }
+
+          this.dictionaryInfoBoxStack.push(key);
+          await this.updateDictInfoBox(strongsEntry, this.currentAdditionalStrongsEntries);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+
+  async findAllOccurrences(strongsKey, bibleTranslationId) {
+    // Add a new tab. Set the default bible translation to the given one to ensure that the translation in the
+    // newly opened tab matches the one in the current tab
+    app_controller.tab_controller.addTab(undefined, false, bibleTranslationId);
+
+    // Set search options for the new tab
+    var currentTab = app_controller.tab_controller.getTab();
+    currentTab.setSearchOptions('strongsNumber', false);
+
+    // Set the search key and populate the search menu
+    app_controller.tab_controller.setTabSearch(strongsKey);
+    app_controller.module_search_controller.populateSearchMenu();
+
+    // Prepare for the next text to be loaded
+    await app_controller.text_controller.prepareForNewText(true, true);
+
+    // Perform the Strong's search
+    await app_controller.module_search_controller.startSearch(/* event */      null,
+                                                             /* tabIndex */   undefined,
+                                                             /* searchTerm */ strongsKey);
+
+    // Run the on-tab-selected actions at the end, because we added a tab
+    const tabIndex = app_controller.tab_controller.getSelectedTabIndex();
+    await eventController.publishAsync('on-tab-selected', tabIndex);
+  }
+
+  async getAllExtraDictModules(lang='GREEK') {
+    var dictModules = await ipcNsi.getAllLocalModules('DICT');
+    var filteredDictModules = [];
+    var excludeList = [ 'StrongsGreek', 'StrongsHebrew' ];
+
+    dictModules.forEach((module) => {
+      var hasStrongsKeys = false;
+
+      if (lang == 'GREEK') {
+        hasStrongsKeys = module.hasGreekStrongsKeys;
+      } else if (lang == 'HEBREW') {
+        hasStrongsKeys = module.hasHebrewStrongsKeys;
+      }
+
+      if (hasStrongsKeys &amp;&amp; !excludeList.includes(module.name)) {
+        filteredDictModules.push(module);
+      }
+    });
+
+    return filteredDictModules;
+  }
+
+  async getExtraDictionaryContent(lang='GREEK', strongsEntry) {
+    let extraDictModules = await this.getAllExtraDictModules(lang);
+    let extraDictContent = "&lt;hr>&lt;/hr>";
+
+    const moduleInfoButtonTitle = i18n.t('menu.show-module-info');
+
+    for (let i = 0; i &lt; extraDictModules.length; i++) {
+      let dict = extraDictModules[i];
+      let currentDictContent = await this.getDictionaryEntry(dict.name, strongsEntry);
+
+      if (currentDictContent != undefined) {
+        currentDictContent = currentDictContent.trim();
+        let moduleInfoButton = this.getModuleInfoButton(moduleInfoButtonTitle, dict.name);
+
+        let dictHeader = `
+          &lt;div class='bold' style='margin-bottom: 1em'>
+            &lt;span>${dict.description}&lt;/span>
+            ${moduleInfoButton}
+            &lt;/div>
+          &lt;/div> ${currentDictContent} &lt;hr>&lt;/hr>
+        `;
+
+        extraDictContent += dictHeader;
+      }
+    }
+
+    return extraDictContent;
+  }
+
+  getModuleInfoButton(moduleInfoButtonTitle, moduleCode) {
+    return `
+      &lt;div class='module-info-button fg-button ui-corner-all ui-state-default ui-state-default'
+            i18n='[title]menu.show-module-info' title='${moduleInfoButtonTitle}' module='${moduleCode}'>
+        &lt;i class='fas fa-info'>&lt;/i>
+      &lt;/div>
+    `;
+  }
+
+  async getDictionaryEntry(moduleCode, strongsEntry) {
+    // We first try to fetch the dictionary entry by using the rawKey
+    var currentDictContent = await ipcNsi.getRawModuleEntry(moduleCode, strongsEntry.rawKey.slice(1));
+
+    // If the first attempt returned undefined we try again.
+    // This time we try to fetch the dictionary entry by slicing off the first character of the Strong's key.
+    if (currentDictContent == undefined) {
+      currentDictContent = await ipcNsi.getRawModuleEntry(moduleCode, strongsEntry.key.slice(1));
+    }
+
+    // If the second attempt returned undefined we try again.
+    // This time with the full Strong's key (including H or G as first character)
+    if (currentDictContent == undefined) {
+      currentDictContent = await ipcNsi.getRawModuleEntry(moduleCode, strongsEntry.key);
+    }
+
+    if (currentDictContent != undefined) {
+      // Rename the title element, since this otherwise replaces the Window title
+      currentDictContent = currentDictContent.replace(/&lt;title>/g, "&lt;entryTitle>");
+      currentDictContent = currentDictContent.replace(/&lt;\/title>/g, "&lt;/entryTitle>");
+    }
+
+    return currentDictContent;
+  }
+}
+
+module.exports = DictionaryInfoBox;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>
